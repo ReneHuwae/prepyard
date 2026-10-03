@@ -483,11 +483,31 @@
 
   // ---------- scene rail ----------
   var railActiveId = null;
+  // the scenes that have a heading in the script, the same way linkHeadings pairs them,
+  // read without touching the page
+  function scenesInScript(p){
+    var claimed = {}, hs = headings();
+    hs.forEach(function(h){ var id = h.getAttribute("data-scene-id"); if (id && sceneById(p, id)) claimed[id] = true; });
+    hs.forEach(function(h){
+      var id = h.getAttribute("data-scene-id");
+      if (id && claimed[id]) return;
+      var parsed = SP.parseSlugline((h.textContent || "").trim());
+      if (!parsed) return;
+      var want = norm(parsed.name);
+      for (var i = 0; i < p.scenes.length; i++){
+        if (!claimed[p.scenes[i].id] && norm(p.scenes[i].name) === want){ claimed[p.scenes[i].id] = true; break; }
+      }
+    });
+    return p.scenes.filter(function(sc){ return claimed[sc.id]; });
+  }
+  // the rail only lists scenes it can jump to, and goes away until there are any
   function renderRail(p){
     if (!S) return;
-    S.railCount.textContent = p.scenes.length ? "Scenes, " + p.scenes.length : "Scenes";
-    S.railEmpty.hidden = p.scenes.length > 0;
-    S.railList.innerHTML = p.scenes.map(function(sc){
+    var list = scenesInScript(p);
+    S.root.classList.toggle("no-rail", !list.length);
+    S.railCount.textContent = "Scenes, " + list.length;
+    S.railEmpty.hidden = true;
+    S.railList.innerHTML = list.map(function(sc){
       var dots = "";
       if (/INT/i.test(sc.intext)) dots += '<span class="tagdot int" title="Interior"></span>';
       if (/EXT/i.test(sc.intext)) dots += '<span class="tagdot ext" title="Exterior"></span>';
@@ -1653,7 +1673,7 @@
       }).join("") +
       '<button type="button" class="sat-tool" data-annot="erase" data-key="E" title="Erase markup (E)" aria-label="Erase markup">' + IC.erase + '</button>' +
       '<button type="button" class="sat-tool" data-annot="note" data-key="N" title="Note (N)" aria-label="Note">' + IC.note + '</button>';
-    return '<div class="shell-body script-shell">' +
+    return '<div class="shell-body script-shell" data-s="root">' +
       '<aside class="toolrail script-rail" aria-label="Scenes">' +
         '<div class="tr-h" data-s="railCount">Scenes</div>' +
         '<div class="rail-list" data-s="railList"></div>' +

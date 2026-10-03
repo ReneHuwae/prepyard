@@ -100,6 +100,8 @@ button.tb-brand:hover{ color:var(--ink-soft); }
 .tb-right{ display:flex; align-items:center; gap:10px; }
 .tb-meta{ font-size:12px; color:var(--ink-faint); min-width:9em; text-align:right; white-space:nowrap; }
 .tb-meta.is-error{ color:var(--danger); }
+/* the header's text button sits at the icon buttons' height */
+.tb-right .btn{ height:34px; padding:0 14px; }
 
 /* page tabs, under the header */
 .tabbar{ display:flex; align-items:center; gap:22px; margin-bottom:-1px; overflow-x:auto; scrollbar-width:none; }

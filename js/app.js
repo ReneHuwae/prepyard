@@ -472,8 +472,6 @@
   $("exportBtn").addEventListener("click", function(e){
     e.stopPropagation();
     openMenu(this, [
-      { label: "Project file", hint: ".json", onClick: saveProjectFile },
-      "sep",
       { heading: "PDF" },
       { label: "Shotlist", onClick: function(){ FP.exports.shotlist(); } },
       { label: "Breakdown", onClick: function(){ FP.exports.breakdown(); } },

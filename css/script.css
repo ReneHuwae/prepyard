@@ -342,3 +342,6 @@
   .page-area{ padding:20px 12px 40px; }
   .script-toolbar{ padding:8px 10px; gap:8px; }
 }
+/* no scene headings to jump to yet: the page takes the full width */
+.script-shell.no-rail{ grid-template-columns:minmax(0, 1fr); }
+.script-shell.no-rail .script-rail{ display:none; }
