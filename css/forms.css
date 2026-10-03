@@ -124,3 +124,51 @@ tr.dept-band span{ margin-left:8px; color:var(--ink-faint); font-weight:500; }
 .sun-out .pg-toolbar .right{ display:flex; gap:8px; flex-wrap:wrap; }
 @media (max-width: 760px){ .sun-rail{ position:static; } }
 .tz-warn{ color:var(--danger); }
+
+/* callsheet: inputs in the rail, the sheet itself set like a printed page */
+.callsheet{ grid-template-columns:300px minmax(0, 1fr); }
+.cs-rail{ display:grid; align-self:start; }
+.cs-panel + .cs-panel{ border-top:1px solid var(--line); }
+.cs-panel .tr-h{ padding-top:16px; }
+.fld-row.three{ grid-template-columns:repeat(3, minmax(0, 1fr)); gap:8px; }
+.cs-rail .cell-sel.boxed{ width:100%; }
+.cs-ride{ border:1px solid var(--line); padding:10px; display:grid; gap:8px; }
+.cs-ride-head{ display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:700; color:var(--accent); letter-spacing:.03em; }
+.cs-wrap{ padding:24px; background:var(--bg); overflow-x:auto; }
+.cs-sheet{ background:var(--bg-raised); border:1px solid var(--line); padding:28px 30px; max-width:980px; margin:0 auto; min-width:640px; font-size:12.5px; }
+.cs-head{ border-bottom:2px solid var(--ink); padding-bottom:16px; margin-bottom:6px; }
+.cs-head-top{ display:flex; justify-content:space-between; gap:20px; align-items:flex-start; }
+.cs-eyebrow{ font-size:11px; font-weight:700; color:var(--accent); letter-spacing:.06em; text-transform:uppercase; }
+.cs-title{ font-family:var(--font-display); font-weight:800; font-size:28px; letter-spacing:-.02em; margin-top:2px; }
+.cs-daybox{ text-align:right; display:grid; gap:2px; }
+.cs-daybox b{ font-family:var(--font-display); font-size:18px; }
+.cs-daybox span{ color:var(--ink-soft); }
+.cs-stats{ display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:12px; margin-top:18px; }
+.cs-stats .k{ font-size:10px; color:var(--ink-faint); letter-spacing:.05em; text-transform:uppercase; }
+.cs-stats .v{ font-weight:700; font-size:18px; font-variant-numeric:tabular-nums; margin-top:2px; }
+.cs-block{ padding:14px 0; border-bottom:1px solid var(--line); }
+.cs-block:last-child{ border-bottom:none; }
+.cs-block-title{ font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin-bottom:8px; }
+.cs-count{ font-weight:500; color:var(--ink-faint); text-transform:none; letter-spacing:0; margin-left:8px; }
+.cs-table{ width:100%; border-collapse:collapse; }
+.cs-table th{ text-align:left; font-size:10px; color:var(--ink-faint); font-weight:700; letter-spacing:.04em; padding:5px 8px 5px 0; border-bottom:1px solid var(--line-strong); }
+.cs-table td{ padding:6px 8px 6px 0; border-bottom:1px solid var(--line); vertical-align:top; }
+.cs-table .tn{ font-variant-numeric:tabular-nums; white-space:nowrap; }
+.cs-table tr.cs-break td{ background:var(--bg); color:var(--ink-soft); font-weight:600; font-size:11px; letter-spacing:.04em; text-transform:uppercase; padding-left:6px; }
+.cs-table tr.cs-done td{ color:var(--ink-faint); }
+.cs-sum{ color:var(--ink-soft); font-size:11.5px; margin-top:2px; }
+.cs-crew + .cs-crew{ margin-top:10px; }
+.cs-crew th{ color:var(--ink); }
+.cs-call.own{ color:var(--accent); font-weight:700; }
+.cs-locline{ display:flex; gap:14px; align-items:baseline; flex-wrap:wrap; margin-bottom:8px; font-size:14px; }
+.cs-locline span{ color:var(--ink-soft); font-size:12px; }
+.cs-kv{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:12px; }
+.cs-kv b{ display:block; font-size:10px; color:var(--ink-faint); letter-spacing:.04em; text-transform:uppercase; }
+.cs-notes{ margin:6px 0 0; line-height:1.55; }
+.cs-none{ margin:0; color:var(--ink-faint); }
+@media (max-width: 1100px){ .callsheet{ grid-template-columns:1fr; } }
+@media (max-width: 760px){ .cs-wrap{ padding:12px; } .cs-sheet{ padding:18px; } }
+.cs-tz{ margin:8px 0 0; font-size:11px; color:var(--ink-faint); }
+.cs-crew{ table-layout:fixed; }
+.cs-crew td:nth-child(1){ width:26%; } .cs-crew td:nth-child(2){ width:24%; } .cs-crew td:nth-child(3){ width:18%; }
+.cs-crew td:nth-child(4){ width:22%; overflow-wrap:anywhere; } .cs-crew td:nth-child(5){ width:10%; }
