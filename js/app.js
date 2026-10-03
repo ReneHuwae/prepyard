@@ -130,6 +130,7 @@
     host.innerHTML = "";
     if (modalOnClose){ var f = modalOnClose; modalOnClose = null; f(); }
   }
+  FP.closeModal = closeModal;
   var openModal = FP.openModal = function(title, bodyHTML, onClose){
     closeMenu();
     $("modalHost").innerHTML =
@@ -291,6 +292,9 @@
     window.scrollTo(0, 0);
   }
   function leaveProject(){
+    var page = FP.pages[currentPage];
+    if (page && page.leave) page.leave();
+    $("page").innerHTML = "";
     FP.closeSession();
     showHome();
   }
@@ -381,6 +385,8 @@
   });
 
   // ---------- page tabs ----------
+  FP.currentPage = function(){ return $("editor").hidden ? null : currentPage; };
+  FP.showPage = function(name){ showPage(name); };
   function showPage(name){
     if (!FP.pages[name]) return;
     var prev = FP.pages[currentPage];
