@@ -110,6 +110,9 @@
 .p-dolly{ fill:color-mix(in srgb, var(--cam) 15%, var(--bg-raised)); stroke:var(--cam); stroke-width:1.6; }
 .p-dolly-seat{ stroke:var(--cam); }
 .p-camdot{ fill:var(--cam); }
+.p-rag{ fill:var(--ink-soft); opacity:.1; }
+.fp-prop text.p-size{ font-size:12px; font-weight:700; fill:var(--ink-faint); }
+.fp-var{ display:flex; flex-wrap:wrap; gap:0 14px; }
 .fp-prop text{ font-family:var(--font-ui); font-size:11px; font-weight:600; fill:var(--ink-soft); pointer-events:none; }
 .fp-prop.sel .p-line, .fp-prop.sel .p-fill, .fp-prop.sel .p-white, .fp-prop.sel .p-glass, .fp-prop.sel .p-solid,
 .fp-prop.sel .p-warm, .fp-prop.sel .p-leaf, .fp-prop.sel .p-dolly, .fp-prop.sel .p-sun{ stroke:var(--accent); }

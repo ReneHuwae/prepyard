@@ -42,10 +42,12 @@
       { p: "panel", tip: "LED panel or softbox", svg: '<rect x="3" y="11" width="14" height="5" rx="1"/><path d="M7.7 11 V16 M12.3 11 V16" stroke-width="1"/><path d="M4.5 9 L2.5 4 M15.5 9 L17.5 4" stroke-dasharray="1.4 1.8"/>' },
       { p: "tube", tip: "Tube light", svg: '<path d="M4 5.5 H16 M4 14.5 H16" stroke-dasharray="1.4 1.8"/><rect x="2.5" y="8.5" width="15" height="3" rx="1.5"/><path d="M6.5 8.5 V11.5 M10 8.5 V11.5 M13.5 8.5 V11.5" stroke-width="1"/>' },
       { p: "flex", tip: "Small flex LED", svg: '<path d="M6 8 L4 3.5 M14 8 L16 3.5" stroke-dasharray="1.4 1.8"/><rect x="4.5" y="10" width="11" height="3.5" rx=".8"/><path d="M10 13.5 V15.5"/><rect x="8.5" y="15.5" width="3" height="2" rx=".4" fill="currentColor" stroke="none"/>' },
+      { p: "maxi", tip: "Maxi-brute, jumbo or dino", svg: '<rect x="3" y="8.5" width="14" height="6" rx="1"/><circle cx="6.5" cy="11.5" r="1.5"/><circle cx="10" cy="11.5" r="1.5"/><circle cx="13.5" cy="11.5" r="1.5"/><path d="M5 6.5 L3 2.5 M15 6.5 L17 2.5" stroke-dasharray="1.4 1.8"/><path d="M2 11.5 V17 H18 V11.5" stroke-width="1"/>' },
       { p: "practical", tip: "Practical lamp", svg: '<path d="M6 3 H14 L16 9 H4 Z"/><path d="M10 9 V15.5"/><path d="M6.5 17 H13.5"/>' } ] },
     { group: "Grip", items: [
       { p: "bounce", tip: "Bounce board", svg: '<rect x="2.5" y="10.5" width="15" height="3" rx=".6"/><path d="M5 8 Q10 4.5 15 8" stroke-dasharray="1.4 1.8"/><path d="M10 13.5 V16.5"/>' },
       { p: "flag", tip: "Flag or neg", svg: '<rect x="2.5" y="10.5" width="15" height="3" rx=".6" fill="currentColor"/><path d="M10 13.5 V16.5"/>' },
+      { p: "butterfly", tip: "Butterfly frame: 4×4 to 12×12", svg: '<rect x="3" y="3" width="14" height="14"/><path d="M3 3 L17 17 M17 3 L3 17" stroke-width="1" opacity=".55"/><circle cx="1.5" cy="10" r="1" fill="currentColor"/><circle cx="18.5" cy="10" r="1" fill="currentColor"/>' },
       { p: "cstand", tip: "C-stand", svg: '<circle cx="9" cy="12" r="1.4" fill="currentColor"/><path d="M9 12 V5 M9 12 L3.5 15.5 M9 12 L14.5 15.5"/><path d="M9 5 L17 3" stroke-dasharray="1.6 1.6"/>' },
       { p: "track", tip: "Dolly and track", svg: '<path d="M2 8 H18 M2 12 H18"/><path d="M4.5 6 V14 M10 6 V14 M15.5 6 V14" stroke-width="1"/>' },
       { p: "village", tip: "Video village", svg: '<rect x="3" y="3.5" width="14" height="3" rx=".8" fill="currentColor"/><rect x="3" y="10" width="5.5" height="6" rx="1.2"/><rect x="11.5" y="10" width="5.5" height="6" rx="1.2"/>' } ] },
@@ -71,13 +73,39 @@
   var HIT = {
     actor: [28, 22], extra: [28, 22], mark: [18, 18],
     car: [200, 90], gmc: [244, 96], cargo: [236, 96], truck: [652, 128], bike: [84, 28], moto: [88, 42],
-    light: [32, 32], sun: [44, 44], lamp: [36, 36], panel: [42, 24], tube: [54, 14], flex: [28, 16], practical: [30, 30],
+    light: [32, 32], sun: [44, 44], lamp: [36, 36], panel: [42, 24], tube: [54, 14], flex: [28, 16], practical: [30, 30], maxi: [46, 28],
     bounce: [64, 24], flag: [52, 22], cstand: [44, 40], track: [200, 36], village: [76, 54],
     table: [64, 40], chair: [28, 30], stool: [18, 18], sofa: [88, 40], bed: [68, 88], bed1: [40, 88], lounger: [32, 84],
     wardrobe: [52, 28], cabinet: [42, 24], kitchen: [100, 28], stove: [28, 28], fridge: [28, 30], bar: [88, 50], toilet: [18, 30],
     plant: [44, 44]
   };
 
+  // objects that come in versions: the inspector and the right-click menu offer them
+  var VARIANTS = {
+    actor: { key: "stance", label: "Stance", def: "stand", options: [["stand", "Standing"], ["sit", "Sitting"], ["lie", "Lying"]] },
+    extra: { key: "stance", label: "Stance", def: "stand", options: [["stand", "Standing"], ["sit", "Sitting"], ["lie", "Lying"]] },
+    butterfly: { key: "size", label: "Frame", def: "6", options: [["4", "4×4"], ["6", "6×6"], ["8", "8×8"], ["12", "12×12"]] }
+  };
+  function variant(pr){
+    var v = VARIANTS[pr.kind];
+    if (!v) return "";
+    var x = pr[v.key];
+    return v.options.some(function(o){ return o[0] === x; }) ? x : v.def;
+  }
+  function frameSide(pr){ return Math.round(+variant(pr) * 0.3048 * 40); }   // feet to plan units
+  function hit(pr){
+    if (pr.kind === "actor" || pr.kind === "extra"){ var st = variant(pr); return st === "sit" ? [28, 40] : st === "lie" ? [26, 80] : HIT[pr.kind]; }
+    if (pr.kind === "butterfly"){ var f = frameSide(pr); return [f + 14, f + 4]; }
+    return HIT[pr.kind] || [36, 36];
+  }
+  function person(pr, ghost){
+    var b = ghost ? "p-ghost" : "p-fill", h = ghost ? "p-ghost" : "p-white", n = ghost ? "p-ghost-dot" : "p-dot", st = variant(pr);
+    var nose = '<path class="' + n + '" d="M-1.2,-4.9 L0,-6.8 L1.2,-4.9 Z"/>';
+    if (st === "lie") return '<g transform="translate(0 4)"><rect class="' + b + '" x="-7.5" y="6" width="6.5" height="34" rx="3"/><rect class="' + b + '" x="1" y="6" width="6.5" height="34" rx="3"/>' +
+      '<rect class="' + b + '" x="-11" y="-21" width="22" height="30" rx="7"/><circle class="' + h + '" cy="-27" r="5"/></g>';
+    var legs = st === "sit" ? '<rect class="' + b + '" x="-7.5" y="-17" width="6.5" height="14" rx="3"/><rect class="' + b + '" x="1" y="-17" width="6.5" height="14" rx="3"/>' : "";
+    return legs + '<rect class="' + b + '" x="-11" y="-4" width="22" height="9" rx="4.5"/><circle class="' + h + '" r="5"/>' + nose;
+  }
   function rays(r1, r2, n){
     var d = "";
     for (var k = 0; k < n; k++){ var a = k * 2 * Math.PI / n, c = Math.cos(a), s = Math.sin(a);
@@ -101,11 +129,12 @@
   }
   function beam(n, f, w1, w2){ return '<path class="p-beam" d="M' + (-n) + ',' + (-f) + ' L' + (-w2) + ',-72 L' + w2 + ',-72 L' + n + ',' + (-f) + ' Z"/>'; }
 
-  function shape(kind){
+  function shape(kind, pr){
+    pr = pr || { kind: kind };
     switch (kind){
       // people
-      case "actor": return '<rect class="p-fill" x="-11" y="-4" width="22" height="9" rx="4.5"/><circle class="p-white" r="5"/><path class="p-dot" d="M-1.2,-4.9 L0,-6.8 L1.2,-4.9 Z"/>';
-      case "extra": return '<rect class="p-ghost" x="-11" y="-4" width="22" height="9" rx="4.5"/><circle class="p-ghost" r="5"/><path class="p-ghost-dot" d="M-1.2,-4.9 L0,-6.8 L1.2,-4.9 Z"/>';
+      case "actor": return person(pr, false);
+      case "extra": return person(pr, true);
       case "mark": return '<rect class="p-mark" x="-7" y="-6.5" width="14" height="3" rx=".4"/><rect class="p-mark" x="-1.5" y="-6.5" width="3" height="12" rx=".4"/>';
       // vehicles
       case "car": return mirrors(32, 40) + body(-93, 92, 36, 36) + glass(18, 44, 30, 25, 4) +
@@ -143,11 +172,20 @@
         '<rect class="p-tyre" x="-25" y="-3.5" width="4.5" height="7" rx="1.2"/><rect class="p-tyre" x="20.5" y="-3.5" width="4.5" height="7" rx="1.2"/>';
       case "flex": return '<g transform="scale(.75)"><path class="p-beam soft" d="M-14,-7 L-30,-60 L30,-60 L14,-7 Z"/><rect class="p-warm" x="-16" y="-6" width="32" height="6" rx="1" style="stroke-width:1.2"/>' +
         '<path class="p-line" d="M0,0 V3" style="stroke-width:1.2"/><rect class="p-tyre" x="-3.5" y="3" width="7" height="3.5" rx=".6"/></g>';
+      case "maxi": return '<path class="p-beam" d="M-18,-8 L-60,-80 L60,-80 L18,-8 Z"/><rect class="p-warm" x="-19" y="-8" width="38" height="13" rx="2"/>' +
+        '<circle class="p-amber-line" cx="-12" cy="-1.5" r="4.5" style="stroke-width:1.2"/><circle class="p-amber-line" cy="-1.5" r="4.5" style="stroke-width:1.2"/><circle class="p-amber-line" cx="12" cy="-1.5" r="4.5" style="stroke-width:1.2"/>' +
+        '<path class="p-amber-line" d="M-19,-8 H19" style="stroke-width:2.6"/><path class="p-amber-line" d="M-21,-3 V7 H21 V-3" style="stroke-width:1.2"/><circle class="p-amber" cy="10" r="2.6"/>';
       case "practical": return '<circle class="p-halo" r="22"/><circle class="p-warm" r="10.5"/><circle class="p-amber-line" r="6" style="stroke-width:1;opacity:.6"/><circle class="p-amber" r="2.6"/>';
       // grip
       case "bounce": return '<path class="p-amber-line" d="M-30,-4 Q0,-16 30,-4" style="stroke-width:1.2;stroke-dasharray:2 2.4;opacity:.7"/><rect class="p-white" x="-30" y="-3" width="60" height="6" rx="1"/>' +
         '<path class="p-amber-line" d="M-29,-3 H29" style="stroke-width:2"/><path class="p-line" d="M0,3 V7"/><circle class="p-dot" cy="9" r="2.6"/>';
       case "flag": return '<g transform="scale(.85 1)">' + '<rect class="p-solid" x="-28" y="-3" width="56" height="6" rx="1"/><path class="p-line" d="M0,3 V7"/><circle class="p-dot" cy="9" r="2.6"/>' + '</g>';
+      case "butterfly": var f = frameSide(pr), e = f / 2;
+        return '<rect class="p-rag" x="' + (-e) + '" y="' + (-e) + '" width="' + f + '" height="' + f + '"/>' +
+          '<path class="p-faint" d="M' + (-e) + ',' + (-e) + ' L' + e + ',' + e + ' M' + e + ',' + (-e) + ' L' + (-e) + ',' + e + '"/>' +
+          '<rect class="p-line" x="' + (-e) + '" y="' + (-e) + '" width="' + f + '" height="' + f + '" style="stroke-width:2.4"/>' +
+          '<circle class="p-dot" cx="' + (-e - 5) + '" r="3"/><circle class="p-dot" cx="' + (e + 5) + '" r="3"/>' +
+          '<text class="p-size" y="4" text-anchor="middle">' + variant(pr) + '×' + variant(pr) + '</text>';
       case "cstand": return '<path class="p-line" d="M0,0 L0,-17 M0,0 L-14.7,8.5 M0,0 L14.7,8.5" style="stroke-linecap:round"/><path class="p-thin" d="M0,0 L22,-12" style="stroke-dasharray:3 2.4"/>' +
         '<circle class="p-dot" r="3.2"/><circle class="p-white" cx="22" cy="-12" r="2.4" style="stroke-width:1.4"/>';
       case "track": var sl = ""; for (var x = -90; x <= 90; x += 20) sl += "M" + x + ",-15 V15 ";
@@ -190,5 +228,5 @@
     }
   }
 
-  FP.floorplanProps = { TOOLS: TOOLS, HIT: HIT, shape: shape };
+  FP.floorplanProps = { TOOLS: TOOLS, HIT: HIT, shape: shape, hit: hit, VARIANTS: VARIANTS, variant: variant };
 })();
