@@ -286,11 +286,21 @@
       reader.readAsText(file);
     });
   }
-  $("homeOpenFile").addEventListener("click", function(){ $("homeOpenFileInput").click(); });
+  // what can be opened, before the file picker
+  $("homeOpenFile").addEventListener("click", function(){
+    var body = openModal("Open a project file",
+      '<p>Import a JSON file exported using Filmprep: a <b>.filmprep.json</b> from Project export, or a project file saved by the classic version. ' +
+      'It opens as a new project here; the file itself isn\'t changed.</p>' +
+      '<div class="exp-actions"><button type="button" class="btn solid" data-open-go>Choose file…</button></div>');
+    var go = body.querySelector("[data-open-go]");
+    go.focus();
+    go.addEventListener("click", function(){ $("homeOpenFileInput").click(); });
+  });
   $("homeOpenFileInput").addEventListener("change", function(){
     var input = this, file = input.files && input.files[0];
     input.value = "";
     if (!file) return;
+    closeModal();
     readProjectFile(file).then(function(p){
       var id = FP.newProjectId();
       return FP.storage.save(id, p).then(function(){ enterProject(id, p); toast("Project opened."); });
@@ -459,12 +469,48 @@
     if (b) showPage(b.dataset.page);
   });
 
+  // ---------- export window ----------
+  // Every export opens one of these first: what it is, the file name, and Download once
+  // the file is ready. { title, text, filename, mime, build() -> data or Promise, saved() }
+  function sizeText(n){ return n > 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB"; }
+  FP.exportDialog = function(o){
+    var body = openModal(o.title,
+      '<p>' + esc(o.text) + '</p>' +
+      '<div class="exp-file"><span class="exp-name">' + esc(o.filename) + '</span><span class="exp-size" data-exp-size>Preparing…</span></div>' +
+      '<div class="exp-actions"><button type="button" class="btn solid" data-exp-go disabled>Download</button></div>');
+    var data = null, go = body.querySelector("[data-exp-go]"), size = body.querySelector("[data-exp-size]");
+    Promise.resolve().then(o.build).then(function(d){
+      data = d;
+      size.textContent = sizeText(typeof d === "string" ? new Blob([d]).size : (d.byteLength || d.length || 0));
+      go.disabled = false;
+      go.focus();
+    }, function(err){
+      if (window.console) console.error(err);
+      size.textContent = "Couldn't prepare this file. " + ((err && err.message) || "");
+      size.classList.add("is-error");
+    });
+    go.addEventListener("click", function(){
+      if (!data) return;
+      go.disabled = true;
+      download(o.filename, data, o.mime).then(function(saved){
+        go.disabled = false;
+        if (!saved) return;
+        closeModal();
+        if (o.saved) o.saved();
+        toast(o.filename + " is in your downloads.");
+      });
+    });
+  };
+
   // ---------- project file, export, settings ----------
   function saveProjectFile(){
     var p = FP.project();
     if (!p) return;
-    download(slugForFile(p.name) + ".filmprep.json", FP.projectFileJSON(p), "application/json").then(function(saved){
-      if (saved) toast("Project file saved to your downloads.");
+    FP.exportDialog({
+      title: "Project export",
+      text: "Everything in this project in one file: the script, shots, schedule, people and photos. Open it again with Open project file on your projects page.",
+      filename: slugForFile(p.name) + ".filmprep.json", mime: "application/json",
+      build: function(){ return FP.projectFileJSON(FP.project()); }
     });
   }
   $("shareBtn").addEventListener("click", saveProjectFile);
