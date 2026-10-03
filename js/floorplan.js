@@ -695,7 +695,7 @@
       document.body.appendChild(anchorEl);
       var items = names.length ? [{ heading: "Name this person" }].concat(names.map(function(n){
         return { label: n, onClick: function(){ change(function(){ var x = props()[i]; if (x) x.label = n; }); } };
-      })) : [{ label: "No cast yet: add them on the Crew page", disabled: true }];
+      })) : [{ label: "No cast yet: add them on the Cast and crew page", disabled: true }];
       if (pr.label) items.push("sep", { label: "Clear name", onClick: function(){ change(function(){ var x = props()[i]; if (x) x.label = ""; }); } });
       FP.openMenu(anchorEl, items);
       anchorEl.remove();

@@ -136,7 +136,6 @@
         '<div class="pg-toolbar">' +
           '<div class="left"><h3>Shot list</h3><span class="count" data-sl="count">' + esc(countText(p)) + '</span></div>' +
           '<div class="right">' +
-            '<button type="button" class="btn ghost" data-act="export-pdf">Export PDF</button>' +
             '<button type="button" class="btn ghost" data-act="columns" aria-haspopup="true">Columns</button>' +
             '<button type="button" class="btn ghost" data-act="add-scene">+ Add scene</button>' +
             '<button type="button" class="btn solid" data-act="add-shot-top">+ Add shot</button>' +
@@ -461,7 +460,6 @@
       var act = b.getAttribute("data-act");
       var row = b.closest("tr");
       if (act === "columns"){ e.stopPropagation(); openColumnsMenu(b); }
-      else if (act === "export-pdf") FP.exports.shotlist();
       else if (act === "add-scene") addScene();
       else if (act === "add-shot-top"){
         var p = FP.project();
