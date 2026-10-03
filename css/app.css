@@ -186,10 +186,16 @@ button.tb-brand:hover{ color:var(--ink-soft); }
 .modal-body > p{ margin:0; font-size:13px; color:var(--ink-soft); line-height:1.55; }
 
 /* settings: dropdown lists */
-.pref-cols{ display:flex; flex-wrap:wrap; gap:6px; }
-.pref-cols button{ font-size:12.5px; padding:6px 11px; border:1px solid var(--line); background:var(--bg-raised);
-  color:var(--ink-soft); border-radius:0; }
-.pref-cols button.on{ border-color:var(--ink); color:var(--ink); background:var(--bg); font-weight:600; }
+/* the list picker reads like the page tabs: text, the chosen one underlined in orange */
+.pref-cols{ display:flex; flex-wrap:wrap; gap:4px 18px; border-bottom:1px solid var(--line); }
+.pref-cols button{ font-size:13px; padding:7px 2px; border:none; border-bottom:2px solid transparent; margin-bottom:-1px;
+  background:none; color:var(--ink-soft); border-radius:0; }
+.pref-cols button:hover{ color:var(--ink); }
+.pref-cols button.on{ color:var(--ink); font-weight:600; border-bottom-color:var(--accent); }
+.seg{ display:inline-flex; gap:18px; }
+.seg button{ font-size:13px; padding:7px 2px; border:none; border-bottom:2px solid transparent; background:none; color:var(--ink-soft); border-radius:0; }
+.seg button:hover{ color:var(--ink); }
+.seg button.on{ color:var(--ink); font-weight:600; border-bottom-color:var(--accent); }
 .pref-opts{ display:flex; flex-wrap:wrap; gap:6px; }
 .pref-opt{ font-size:12.5px; padding:5px 10px; border:1px solid var(--line-strong); background:var(--bg-raised);
   border-radius:0; display:inline-flex; align-items:center; gap:6px; }
@@ -197,10 +203,6 @@ button.tb-brand:hover{ color:var(--ink-soft); }
 .pref-opt .x{ color:var(--ink-faint); font-size:13px; }
 .pref-add{ display:flex; gap:8px; }
 .pref-add input{ flex:1; min-width:0; padding:7px 9px; border:1px solid var(--line-strong); background:var(--bg-raised); border-radius:0; }
-.seg{ display:inline-flex; border:1px solid var(--line); }
-.seg button{ font-size:12.5px; padding:6px 12px; background:none; border:none; border-right:1px solid var(--line); color:var(--ink-soft); border-radius:0; }
-.seg button:last-child{ border-right:none; }
-.seg button.on{ background:var(--ink); color:var(--bg-raised); font-weight:600; }
 .field-label{ font-size:11px; font-weight:600; color:var(--ink-faint); letter-spacing:.03em; }
 
 /* ---------- toast ---------- */
