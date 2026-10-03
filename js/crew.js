@@ -68,7 +68,8 @@
         '</div>' +
         '<div class="fp-section"><div class="fp-section-head"><h4>Cast</h4>' +
           '<p class="fp-hint">Times here print on every callsheet.</p>' +
-          '<button type="button" class="btn ghost" data-act="add-cast">+ Add cast member</button></div>' +
+          '<div class="add-inline"><button type="button" class="btn ghost" data-act="cast-from-script"' + (p.script.html ? "" : " disabled") + '>Add characters from the script</button>' +
+          '<button type="button" class="btn ghost" data-act="add-cast">+ Add cast member</button></div></div>' +
           (cs.cast.length ? '<div class="tbl-wrap"><table class="ftable" data-coll="cast"><thead><tr><th class="num">#</th><th>Character</th><th>Actor</th><th>Pickup</th>' +
             '<th>Picked up by</th><th>To</th><th>Wardrobe</th><th>Make-up</th><th>On set</th><th class="act-col"></th></tr></thead><tbody>' +
             cs.cast.map(castHTML).join("") + '</tbody></table></div>'
@@ -97,6 +98,21 @@
         FP.change(function(p){ p.callsheet.cast.push({ id: id, character: "", actor: "", pickup: "", pickedUpBy: "", toAddress: "", wardrobe: "", makeup: "", onSet: "" }); });
         var f = page.host().querySelector('[data-coll="cast"] tr[data-rec="' + id + '"] [data-k="character"]');
         if (f) f.focus();
+      },
+      // character cues are tagged by the screenplay parser; drop (CONT'D), (V.O.) and the like
+      "cast-from-script": function(){
+        var t = document.createElement("template"), p = FP.project(), seen = {}, add = [];
+        t.innerHTML = p.script.html;
+        p.callsheet.cast.forEach(function(c){ seen[(c.character || "").trim().toLowerCase()] = 1; });
+        t.content.querySelectorAll(".sp-char").forEach(function(el){
+          var n = el.textContent.replace(/\s*\([^)]*\)\s*$/, "").trim();
+          if (n && !seen[n.toLowerCase()]){ seen[n.toLowerCase()] = 1; add.push(n); }
+        });
+        if (!add.length){ FP.toast("No new character names in the script."); return; }
+        FP.change(function(pp){
+          add.forEach(function(n){ pp.callsheet.cast.push({ id: FP.uid("ca"), character: n, actor: "", pickup: "", pickedUpBy: "", toAddress: "", wardrobe: "", makeup: "", onSet: "" }); });
+        });
+        FP.toast("Added " + add.length + (add.length === 1 ? " character" : " characters") + " from the script.");
       },
       "del-cast": function(b, c){
         FP.change(function(p){ p.callsheet.cast = p.callsheet.cast.filter(function(x){ return x.id !== c.rec; }); });

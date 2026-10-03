@@ -137,8 +137,43 @@
       callsheet: Object.assign({}, b.callsheet, obj(p.callsheet)),
       optionPrefs: obj(p.optionPrefs), exportVersions: obj(p.exportVersions)
     };
+    migrateFloorplan(out);
     return out;
   };
+
+  // Floor plan cameras and props used to be filed under "location::scene number" and point
+  // at their shot by its label ("1B"); renumbering a scene or reordering shots orphaned
+  // them. They're filed under the scene's id now and point at the shot's id.
+  function migrateFloorplan(p){
+    var fp = p.floorplan;
+    ["walls", "doors", "shapes", "cams", "props"].forEach(function(k){ fp[k] = obj(fp[k]); });
+    var byId = {}, byNum = {};
+    p.scenes.forEach(function(sc){ byId[sc.id] = sc; if (sc.num.trim() && !byNum[sc.num.trim()]) byNum[sc.num.trim()] = sc; });
+    ["cams", "props"].forEach(function(kind){
+      Object.keys(fp[kind]).forEach(function(key){
+        var at = key.lastIndexOf("::");
+        if (at === -1) return;
+        var loc = key.slice(0, at), tail = key.slice(at + 2);
+        if (byId[tail]) return;
+        var sc = byNum[tail.trim()];
+        if (!sc) return;
+        var to = loc + "::" + sc.id;
+        fp[kind][to] = (Array.isArray(fp[kind][to]) ? fp[kind][to] : []).concat(arr(fp[kind][key]));
+        delete fp[kind][key];
+      });
+    });
+    Object.keys(fp.cams).forEach(function(key){
+      var sc = byId[key.slice(key.lastIndexOf("::") + 2)];
+      fp.cams[key] = arr(fp.cams[key]).filter(Boolean);
+      if (!sc) return;
+      var labels = FP.shotNumbers(sc);
+      fp.cams[key].forEach(function(c){
+        if (c.shotId || !c.shot) return;
+        var i = labels.findIndex(function(l){ return l.label === String(c.shot).trim(); });
+        if (i !== -1) c.shotId = sc.shots[i].id;
+      });
+    });
+  }
 
   FP.isV3Project = function(d){
     return !!(d && (d.app === "filmprep") && d.version === 3 && Array.isArray(d.scenes));
