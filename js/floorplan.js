@@ -119,14 +119,14 @@
     return false;
   }
   function seats(l){ return l.map(function(s){ return '<rect class="p-seat" x="' + (s[0] - 11) + '" y="' + (s[1] - 11) + '" width="22" height="22" rx="5"/>'; }).join(""); }
-  function propShape(kind){ return FP.floorplanProps.shape(kind); }
-  function hitSize(kind){ return PROP_HIT[kind] || [36, 36]; }
+  function propShape(pr){ return FP.floorplanProps.shape(pr.kind, pr); }
+  function hitSize(pr){ return FP.floorplanProps.hit(pr); }
   // how far below its centre, on screen, a turned and scaled object ends: its label goes there
   function labelDrop(pr, sc){
-    var d = hitSize(pr.kind), r = (pr.rot || 0) * Math.PI / 180;
+    var d = hitSize(pr), r = (pr.rot || 0) * Math.PI / 180;
     return (Math.abs(d[0] / 2 * Math.sin(r)) + Math.abs(d[1] / 2 * Math.cos(r))) * sc + 14;
   }
-  function propHit(kind){ var d = hitSize(kind); return '<rect class="p-hit" x="' + (-d[0] / 2) + '" y="' + (-d[1] / 2) + '" width="' + d[0] + '" height="' + d[1] + '"/>'; }
+  function propHit(pr){ var d = hitSize(pr); return '<rect class="p-hit" x="' + (-d[0] / 2) + '" y="' + (-d[1] / 2) + '" width="' + d[0] + '" height="' + d[1] + '"/>'; }
 
   function svgHTML(){
     var s = '<rect class="fp-paper" width="' + W + '" height="' + Hh + '"/><g class="fp-grid-minor">', x, y, overlay = "";
@@ -194,9 +194,9 @@
     props().forEach(function(pr, i){
       var c = marked("prop", i) ? " sel" : "", sc = pr.sc == null ? 1 : pr.sc;
       s += '<g class="fp-prop' + c + '" data-type="prop" data-i="' + i + '" transform="translate(' + pr.x + ',' + pr.y + ') rotate(' + (pr.rot || 0) + ') scale(' + sc + ')">' +
-        propHit(pr.kind) + propShape(pr.kind) +
+        propHit(pr) + propShape(pr) +
         (pr.label ? '<text y="' + labelDrop(pr, sc).toFixed(1) + '" text-anchor="middle" transform="rotate(' + (-(pr.rot || 0)) + ') scale(' + (1 / sc).toFixed(3) + ')">' + esc(pr.label) + '</text>' : "") +
-        (c ? '<circle class="fp-rot" data-type="proprot" data-i="' + i + '" cy="' + (-(hitSize(pr.kind)[1] / 2) - 18 / sc).toFixed(1) + '" r="' + (7 / sc).toFixed(1) + '"/>' : "") + '</g>';
+        (c ? '<circle class="fp-rot" data-type="proprot" data-i="' + i + '" cy="' + (-(hitSize(pr)[1] / 2) - 18 / sc).toFixed(1) + '" r="' + (7 / sc).toFixed(1) + '"/>' : "") + '</g>';
     });
 
     var shotsById = liveShots();
@@ -263,6 +263,7 @@
           '<label class="fld"><span>Label</span><input data-fpl value="' + esc(item.label || "") + '" placeholder="' + (item.kind === "actor" || item.kind === "extra" ? "Character" : "e.g. 2K fresnel") + '" autocomplete="off"' +
             (names.length ? ' list="fpCastNames"' : "") + '></label>' +
           (names.length ? '<datalist id="fpCastNames">' + names.map(function(n){ return '<option value="' + esc(n) + '"></option>'; }).join("") + '</datalist>' : "") +
+          variantHTML(item) +
           '<label class="fld"><span>Size</span><input type="range" min="30" max="300" step="5" value="' + Math.round((item.sc == null ? 1 : item.sc) * 100) + '" data-fpr="sc"></label>' +
           '<button type="button" class="btn ghost danger-btn" data-fpact="delete">Delete</button>';
       } else if (sel.type === "shape" && item.kind === "text"){
@@ -279,6 +280,17 @@
         '<p class="fp-hint">Every shot gets a camera; its cone follows the lens in the shot list.</p>';
     }
     box.innerHTML = html;
+  }
+  function variantHTML(item){
+    var v = FP.floorplanProps.VARIANTS[item.kind];
+    if (!v) return "";
+    var cur = FP.floorplanProps.variant(item);
+    return '<div class="fld"><span>' + esc(v.label) + '</span><div class="seg fp-var">' + v.options.map(function(o){
+      return '<button type="button" data-fpvar="' + esc(o[0]) + '" aria-pressed="' + (o[0] === cur) + '"' + (o[0] === cur ? ' class="on"' : "") + '>' + esc(o[1]) + '</button>';
+    }).join("") + '</div></div>';
+  }
+  function setVariant(i, val){
+    change(function(){ var x = props()[i], v = x && FP.floorplanProps.VARIANTS[x.kind]; if (v) x[v.key] = val; });
   }
   function propTip(kind){
     for (var g = 0; g < TOOLS.length; g++) for (var i = 0; i < TOOLS[g].items.length; i++) if (TOOLS[g].items[i].p === kind) return TOOLS[g].items[i].tip;
@@ -642,15 +654,26 @@
       var g = e.target.closest && e.target.closest(".fp-prop");
       if (!g) return;
       var i = +g.getAttribute("data-i"), pr = props()[i];
-      if (!pr || (pr.kind !== "actor" && pr.kind !== "extra")) return;
+      var v = pr && FP.floorplanProps.VARIANTS[pr.kind], human = pr && (pr.kind === "actor" || pr.kind === "extra");
+      if (!pr || (!v && !human)) return;
       e.preventDefault();
-      var names = castNames(), anchorEl = document.createElement("span");
+      var anchorEl = document.createElement("span");
       anchorEl.style.cssText = "position:fixed;left:" + e.clientX + "px;top:" + e.clientY + "px;width:0;height:0";
       document.body.appendChild(anchorEl);
-      var items = names.length ? [{ heading: "Name this person" }].concat(names.map(function(n){
-        return { label: n, onClick: function(){ change(function(){ var x = props()[i]; if (x) x.label = n; }); } };
-      })) : [{ label: "No cast yet: add them on the Cast and crew page", disabled: true }];
-      if (pr.label) items.push("sep", { label: "Clear name", onClick: function(){ change(function(){ var x = props()[i]; if (x) x.label = ""; }); } });
+      var items = [];
+      if (v){
+        var cur = FP.floorplanProps.variant(pr);
+        items.push({ heading: v.label });
+        v.options.forEach(function(o){ items.push({ label: o[1], current: o[0] === cur, onClick: function(){ setVariant(i, o[0]); } }); });
+      }
+      if (human){
+        var names = castNames();
+        items.push("sep");
+        items = items.concat(names.length ? [{ heading: "Name this person" }].concat(names.map(function(n){
+          return { label: n, onClick: function(){ change(function(){ var x = props()[i]; if (x) x.label = n; }); } };
+        })) : [{ label: "No cast yet: add them on the Cast and crew page", disabled: true }]);
+        if (pr.label) items.push("sep", { label: "Clear name", onClick: function(){ change(function(){ var x = props()[i]; if (x) x.label = ""; }); } });
+      }
       FP.openMenu(anchorEl, items);
       anchorEl.remove();
     });
@@ -669,6 +692,7 @@
       }
       if (b.hasAttribute("data-fptool")) setTool(b.getAttribute("data-fptool"));
       else if (b.hasAttribute("data-fpprop")) setTool("prop", b.getAttribute("data-fpprop"));
+      if (b.hasAttribute("data-fpvar") && sel && sel.type === "prop"){ setVariant(sel.i, b.getAttribute("data-fpvar")); return; }
       var act = b.getAttribute("data-fpact");
       if (act === "delete") deleteSelected();
       else if (act === "hinge" || act === "swing") change(function(){ var d = doors()[sel.i]; if (d) d[act] = !d[act]; });
