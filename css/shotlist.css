@@ -94,3 +94,7 @@ table.sl tr.scenebreak + tr.shot-row td{ border-top:1px solid var(--line); }
   .shotlist .pg-toolbar .right{ width:100%; }
   .sb-in.sum{ margin-left:0; }
 }
+/* the column labels, pinned under the app bar while the table scrolls past */
+.sl-float-head{ position:fixed; z-index:30; overflow:hidden; pointer-events:none; background:var(--bg-raised); box-shadow:0 6px 10px -8px rgba(0,0,0,.18); }
+.sl-float-head table.sl{ min-width:0; table-layout:fixed; }
+.sl-float-head table.sl thead th{ overflow:hidden; }

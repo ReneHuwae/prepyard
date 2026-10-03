@@ -99,19 +99,23 @@
   // ---------- popover menus ----------
   var openMenuEl = null;
   function closeMenu(){ if (openMenuEl){ openMenuEl.remove(); openMenuEl = null; } }
-  // items: { label, hint, onClick, disabled, danger, confirm } | "sep" | { heading }
+  // items: { label, hint, onClick, disabled, danger, confirm, current, muted } | "sep" | { heading }
+  // opts: { alignRight, minWidth, className }
   var openMenu = FP.openMenu = function(anchor, items, opts){
     closeMenu();
     opts = opts || {};
     var menu = document.createElement("div");
-    menu.className = "menu";
+    menu.className = "menu" + (opts.className ? " " + opts.className : "");
     menu.setAttribute("role", "menu");
+    menu._anchor = anchor;
+    if (opts.minWidth) menu.style.minWidth = Math.round(opts.minWidth) + "px";
     items.forEach(function(it){
       if (it === "sep"){ menu.insertAdjacentHTML("beforeend", '<div class="menu-sep"></div>'); return; }
       if (it.heading){ menu.insertAdjacentHTML("beforeend", '<div class="menu-label">' + esc(it.heading) + '</div>'); return; }
       var b = document.createElement("button");
       b.type = "button";
-      b.className = "menu-item" + (it.danger ? " danger" : "");
+      b.className = "menu-item" + (it.danger ? " danger" : "") + (it.current ? " current" : "") + (it.muted ? " muted" : "");
+      if (it.current) b.setAttribute("aria-checked", "true");
       b.setAttribute("role", "menuitem");
       b.innerHTML = '<span>' + esc(it.label) + '</span>' + (it.hint ? '<span class="hint">' + esc(it.hint) + '</span>' : "");
       if (it.disabled) b.disabled = true;
@@ -134,14 +138,71 @@
     var w = menu.offsetWidth;
     var left = opts.alignRight ? r.right - w : r.left;
     menu.style.left = Math.max(8, Math.min(left, window.innerWidth - w - 8)) + "px";
-    menu.style.top = Math.min(r.bottom + 6, window.innerHeight - menu.offsetHeight - 8) + "px";
+    // below the anchor when there's room, otherwise above it; long lists scroll inside
+    var below = window.innerHeight - r.bottom - 14, above = r.top - 14;
+    var room = below >= Math.min(menu.offsetHeight, 240) || below >= above ? below : above;
+    menu.style.maxHeight = Math.max(120, room) + "px";
+    menu.style.top = (room === below ? r.bottom + 4 : Math.max(8, r.top - 4 - Math.min(menu.offsetHeight, room))) + "px";
     openMenuEl = menu;
-    var first = menu.querySelector(".menu-item:not([disabled])");
-    if (first) first.focus();
+    var first = menu.querySelector(".menu-item.current:not([disabled])") || menu.querySelector(".menu-item:not([disabled])");
+    if (first){ first.focus({ preventScroll: true }); first.scrollIntoView({ block: "nearest" }); }
     return menu;
   };
-  document.addEventListener("click", function(e){ if (openMenuEl && !openMenuEl.contains(e.target)) closeMenu(); });
-  document.addEventListener("keydown", function(e){ if (e.key === "Escape"){ closeMenu(); closeModal(); } });
+  // a click on the menu's own anchor is left to the anchor's handler
+  document.addEventListener("click", function(e){
+    if (openMenuEl && !openMenuEl.contains(e.target) && !(openMenuEl._anchor && openMenuEl._anchor.contains(e.target))) closeMenu();
+  });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape"){
+      var back = openMenuEl && openMenuEl._anchor;
+      closeMenu(); closeModal();
+      if (back && back.focus) back.focus();
+      return;
+    }
+    if (!openMenuEl || !openMenuEl.contains(document.activeElement)) return;
+    var list = Array.prototype.slice.call(openMenuEl.querySelectorAll(".menu-item:not([disabled])"));
+    var i = list.indexOf(document.activeElement), to = null;
+    if (e.key === "ArrowDown") to = list[Math.min(list.length - 1, i + 1)];
+    else if (e.key === "ArrowUp") to = list[Math.max(0, i - 1)];
+    else if (e.key === "Home") to = list[0];
+    else if (e.key === "End") to = list[list.length - 1];
+    else if (e.key === "Tab"){ closeMenu(); return; }
+    if (to){ e.preventDefault(); to.focus(); }
+  });
+
+  // ---------- dropdowns ----------
+  // The app's dropdowns open this menu instead of the system list, which can't be styled.
+  // The <select> underneath still holds the value and fires "change" like before.
+  var SELECTS = "select.cell-sel, select.sb-sel";
+  function openSelect(sel){
+    if (openMenuEl && openMenuEl._anchor === sel){ closeMenu(); return; }
+    var items = Array.prototype.map.call(sel.options, function(o){
+      return { label: o.text || "None", muted: !o.value, current: o.selected, disabled: o.disabled, onClick: function(){
+        sel.focus();
+        if (sel.value === o.value) return;
+        sel.value = o.value;
+        sel.dispatchEvent(new Event("input", { bubbles: true }));
+        sel.dispatchEvent(new Event("change", { bubbles: true }));
+      } };
+    });
+    openMenu(sel, items, { minWidth: sel.getBoundingClientRect().width, className: "select-menu" });
+  }
+  FP.openSelect = openSelect;
+  document.addEventListener("mousedown", function(e){
+    var sel = e.button === 0 && e.target.closest && e.target.closest(SELECTS);
+    if (!sel || sel.disabled) return;
+    e.preventDefault();
+    sel.focus();
+    openSelect(sel);
+  }, true);
+  document.addEventListener("keydown", function(e){
+    var sel = e.target.matches && e.target.matches(SELECTS) ? e.target : null;
+    if (!sel) return;
+    if (e.key === "Enter" || e.key === " " || ((e.key === "ArrowDown" || e.key === "ArrowUp") && e.altKey)){
+      e.preventDefault();
+      openSelect(sel);
+    }
+  }, true);
   window.addEventListener("resize", closeMenu);
 
   // ---------- modal ----------
