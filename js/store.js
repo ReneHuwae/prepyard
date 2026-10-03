@@ -163,6 +163,25 @@
       return { num: n, sub: sub, label: n + sub };
     });
   };
+  // When shots are deleted, the script text they were made from stops being highlighted.
+  // Works on the saved script, so it applies whichever page is showing.
+  FP.unlinkScriptRefs = function(project, refs){
+    refs = (refs || []).filter(Boolean);
+    if (!refs.length || !project.script.html) return;
+    var t = document.createElement("template");
+    t.innerHTML = project.script.html;
+    var hit = false;
+    refs.forEach(function(ref){
+      var sel = '.script-shot-ref[data-script-ref="' + (window.CSS && CSS.escape ? CSS.escape(ref) : ref) + '"]';
+      t.content.querySelectorAll(sel).forEach(function(sp){
+        var parent = sp.parentNode;
+        while (sp.firstChild) parent.insertBefore(sp.firstChild, sp);
+        parent.removeChild(sp);
+        hit = true;
+      });
+    });
+    if (hit) project.script.html = t.innerHTML;
+  };
   FP.nextSceneNumber = function(project){
     return project.scenes.reduce(function(max, s){ return Math.max(max, parseFloat(s.num) || 0); }, 0) + 1;
   };

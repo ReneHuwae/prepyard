@@ -58,6 +58,28 @@
       });
     });
   }
+  // Photos are stored inside the project, so they're scaled down and saved as JPEG first.
+  FP.readImageFile = function(file, maxDim, quality){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onload = function(){
+        var img = new Image();
+        img.onload = function(){
+          var scale = Math.min(1, (maxDim || 1200) / Math.max(img.width, img.height));
+          var c = document.createElement("canvas");
+          c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+          c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+          resolve(c.toDataURL("image/jpeg", quality || 0.75));
+        };
+        img.onerror = function(){
+          reject(new Error(/\.(heic|heif)$/i.test(file.name || "") ? "HEIC photos only open in Safari. Convert to JPEG first." : "That file isn't an image this browser can read."));
+        };
+        img.src = reader.result;
+      };
+      reader.onerror = function(){ reject(reader.error); };
+      reader.readAsDataURL(file);
+    });
+  };
   // where the "classic version" links go; an artifact build points this at the classic artifact
   FP.CLASSIC_URL = window.FP_CLASSIC_URL || "classic/";
   function browserDownload(filename, text, mime){

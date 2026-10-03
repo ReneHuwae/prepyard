@@ -1947,6 +1947,7 @@
       if (drawOn) setDrawMode(false);
       S = null;
     },
-    revealRef: function(refId){ return revealRef(refId); }
+    revealRef: function(refId){ return revealRef(refId); },
+    revealScene: function(sceneId){ if (S) jumpToScene(sceneId); }
   };
 })();
