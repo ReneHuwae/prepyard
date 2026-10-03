@@ -1,0 +1,8 @@
+{
+  // Cloudflare Workers: serve Filmprep as static files, no build step
+  "name": "filmprep",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./"
+  }
+}
