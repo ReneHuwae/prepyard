@@ -437,6 +437,14 @@
     $("moreBtn").setAttribute("aria-expanded", open ? "true" : "false");
     $("moreBtn").querySelector(".car").textContent = open ? "▴" : "▾";
   }
+  // pages that pin their own toolbars park them under the header
+  (function(){
+    var bar = $("appbar");
+    function sync(){ document.documentElement.style.setProperty("--appbar-h", bar.offsetHeight + "px"); }
+    if (window.ResizeObserver) new ResizeObserver(sync).observe(bar);
+    window.addEventListener("resize", sync);
+    sync();
+  })();
   $("tabbar").addEventListener("click", function(e){
     var b = e.target.closest("[data-page]");
     if (b){ showPage(b.dataset.page); return; }

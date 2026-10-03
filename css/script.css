@@ -20,7 +20,7 @@
 
 /* ---------- layout ---------- */
 .script-shell{ grid-template-columns:230px minmax(0, 1fr); }
-.script-rail{ position:sticky; top:12px; max-height:calc(100vh - 24px); display:flex; flex-direction:column; }
+.script-rail{ position:sticky; top:calc(var(--appbar-h, 0px) + 12px); max-height:calc(100vh - var(--appbar-h, 0px) - 24px); display:flex; flex-direction:column; }
 .rail-list{ overflow-y:auto; min-height:0; }
 .rail-empty{ margin:0; padding:4px 16px 16px; font-size:12px; color:var(--ink-faint); line-height:1.55; }
 .scene-item{ display:grid; grid-template-columns:28px minmax(0, 1fr); gap:10px; width:100%; text-align:left;
@@ -38,7 +38,7 @@
 .tagdot.int{ background:var(--int-dot); } .tagdot.ext{ background:var(--ext-dot); } .tagdot.night{ background:var(--night-dot); }
 
 .script-main{ overflow:visible; }
-.script-toolbars{ position:sticky; top:0; z-index:40; background:var(--bg-raised); border-bottom:1px solid var(--line); }
+.script-toolbars{ position:sticky; top:var(--appbar-h, 0px); z-index:40; background:var(--bg-raised); border-bottom:1px solid var(--line); }
 .script-toolbar{ display:flex; align-items:center; gap:12px; padding:10px 16px; flex-wrap:wrap; }
 .script-toolbar + .script-toolbar{ border-top:1px solid var(--line); }
 .stb-group{ display:flex; align-items:center; gap:14px; }
