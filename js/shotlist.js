@@ -155,6 +155,7 @@
       .map(function(l){ return '<option value="' + esc(l.name) + '"></option>'; }).join("");
     H.querySelector("#slLenses").innerHTML = lensNames(p).map(function(n){ return '<option value="' + esc(n) + '"></option>'; }).join("");
     if (!p.scenes.length){
+      dropHead();
       body.innerHTML = '<div class="sl-empty"><p>No scenes yet. Add one here, or select a line on the Script page and make a shot from it.</p>' +
         '<button type="button" class="btn solid" data-act="add-scene">+ Add scene</button></div>';
       return;
@@ -162,9 +163,54 @@
     var wrap = body.querySelector(".sl-table-wrap");
     var left = wrap ? wrap.scrollLeft : 0;
     body.innerHTML = '<div class="sl-table-wrap">' + tableHTML(p) + '</div>';
-    body.querySelector(".sl-table-wrap").scrollLeft = left;
+    wrap = body.querySelector(".sl-table-wrap");
+    wrap.scrollLeft = left;
+    wrap.addEventListener("scroll", placeHead);
     body.querySelectorAll("textarea.grow").forEach(autoGrow);
+    buildHead();
   }
+
+  // The table scrolls sideways inside its wrapper, which stops a sticky thead; a fixed copy
+  // of the column labels takes over under the app bar once the real ones scroll out of view.
+  var floatHead = null;
+  function buildHead(){
+    dropHead();
+    var table = H && H.querySelector("table.sl");
+    if (!table) return;
+    floatHead = document.createElement("div");
+    floatHead.className = "sl-float-head";
+    floatHead.setAttribute("aria-hidden", "true");
+    floatHead.innerHTML = '<table class="sl">' + table.tHead.outerHTML + '</table>';
+    floatHead.hidden = true;
+    H.appendChild(floatHead);
+    placeHead();
+  }
+  function dropHead(){ if (floatHead) floatHead.remove(); floatHead = null; }
+  function placeHead(){
+    if (!floatHead || !H) return;
+    var table = H.querySelector("table.sl"), wrap = H.querySelector(".sl-table-wrap");
+    if (!table || !wrap){ floatHead.hidden = true; return; }
+    var bar = document.getElementById("appbar");
+    var top = bar ? bar.getBoundingClientRect().bottom : 0;
+    var head = table.tHead.getBoundingClientRect(), tr = table.getBoundingClientRect();
+    var show = head.top < top && tr.bottom > top + head.height;
+    floatHead.hidden = !show;
+    if (!show) return;
+    var w = wrap.getBoundingClientRect();
+    floatHead.style.top = top + "px";
+    floatHead.style.left = w.left + "px";
+    floatHead.style.width = wrap.clientWidth + "px";
+    var copy = floatHead.firstChild;
+    copy.style.width = tr.width + "px";
+    copy.style.transform = "translateX(" + (-wrap.scrollLeft) + "px)";
+    var real = table.tHead.rows[0].cells, ths = copy.tHead.rows[0].cells;
+    for (var i = 0; i < real.length && i < ths.length; i++){
+      var cw = real[i].getBoundingClientRect().width + "px";
+      ths[i].style.width = cw; ths[i].style.minWidth = cw; ths[i].style.maxWidth = cw;
+    }
+  }
+  window.addEventListener("scroll", placeHead, { passive: true });
+  window.addEventListener("resize", placeHead);
   function autoGrow(ta){ ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; }
 
   // redraw, keeping the field you were in and where you were in it
@@ -480,9 +526,8 @@
       if (!c) return;
       e.preventDefault();
       c.focus();
-      if (c.tagName === "SELECT"){
-        if (typeof c.showPicker === "function"){ try { c.showPicker(); } catch (err){} }
-      } else {
+      if (c.tagName === "SELECT") FP.openSelect(c);
+      else {
         var n = c.value.length;
         try { c.setSelectionRange(n, n); } catch (err){}
       }
@@ -535,7 +580,7 @@
       }
       redraw(p);
     },
-    leave: function(){ endDrag(true); var m = document.querySelector(".cols-menu"); if (m) m.remove(); H = null; },
+    leave: function(){ endDrag(true); dropHead(); var m = document.querySelector(".cols-menu"); if (m) m.remove(); H = null; },
     revealShot: function(shotId){
       FP.showPage("shotlist");
       var tr = H && H.querySelector('tr[data-shot="' + shotId + '"]');
