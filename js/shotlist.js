@@ -473,6 +473,22 @@
       else if (act === "scene-menu"){ e.stopPropagation(); openSceneMenu(b, row.getAttribute("data-scene")); }
       else if (act === "thumb"){ e.stopPropagation(); openThumb(b, row.getAttribute("data-shot")); }
     });
+    // a tall row leaves empty space around its short fields; a click there still lands in the field
+    host.addEventListener("mousedown", function(e){
+      if (e.button !== 0) return;
+      var td = e.target.closest && e.target.closest("tr.shot-row td");
+      if (!td || e.target !== td) return;
+      var c = td.querySelector("input.cell-in, textarea.cell-in, select.cell-sel");
+      if (!c) return;
+      e.preventDefault();
+      c.focus();
+      if (c.tagName === "SELECT"){
+        if (typeof c.showPicker === "function"){ try { c.showPicker(); } catch (err){} }
+      } else {
+        var n = c.value.length;
+        try { c.setSelectionRange(n, n); } catch (err){}
+      }
+    });
     host.addEventListener("focusin", function(e){
       var row = e.target.closest && e.target.closest("tr[data-scene]");
       if (row) lastSceneId = row.getAttribute("data-scene");

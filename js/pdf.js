@@ -153,8 +153,8 @@
       pages.forEach(function(pg, i){
         page = pg;
         d.hline(M, PW - M, PH - M - 6, C.line);
-        d.text(M, PH - M + 4, "Filmprep · exported " + stamp, { size: 7, color: C.faint });
-        d.text(PW - M, PH - M + 4, "Page " + (i + 1) + " of " + pages.length, { size: 7, color: C.faint, align: "right" });
+        d.text(M, PH - M + 4, "This document was created using Filmprep: the all-in-one preproduction app.", { size: 7, color: C.faint });
+        d.text(PW - M, PH - M + 4, "Exported " + stamp + " · Page " + (i + 1) + " of " + pages.length, { size: 7, color: C.faint, align: "right" });
       });
       return pdf.save();
     };
