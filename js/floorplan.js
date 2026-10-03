@@ -9,38 +9,8 @@
 
   var GRID = 20, W = 1200, Hh = 800;
   var SENSOR_W = 24.9;   // Super 35, so the cone matches the lens: 18mm ≈ 69°, 50mm ≈ 28°
-  var TOOLS = [
-    { group: "Select", items: [
-      { t: "select", tip: "Select and move (V)", svg: '<path d="M4 2 L4 16 L7.5 12.5 L10.5 18 L12.5 17 L9.5 11.5 L15 11.5 Z" fill="currentColor" stroke="none"/>' },
-      { t: "eraser", tip: "Eraser: click an item to delete it (E)", svg: '<rect x="3" y="9" width="13" height="7" rx="1" transform="rotate(-35 10 12)"/><line x1="4" y1="17" x2="16" y2="17"/>' } ] },
-    { group: "Set", items: [
-      { t: "wall", tip: "Wall: drag to draw (W)", svg: '<rect x="2" y="8" width="16" height="4" fill="currentColor" stroke="none"/>' },
-      { t: "door", tip: "Door: click a wall", svg: '<path d="M2 16 H6 M14 16 H18"/><path d="M6 16 V5"/><path d="M6 5 A11 11 0 0 1 17 16" stroke-dasharray="2.5 2"/>' },
-      { t: "window", tip: "Window: click a wall", svg: '<rect x="2" y="7" width="16" height="6"/><line x1="2" y1="10" x2="18" y2="10"/>' } ] },
-    { group: "Draw", items: [
-      { t: "rect", tip: "Rectangle", svg: '<rect x="3" y="5" width="14" height="10"/>' },
-      { t: "ellipse", tip: "Ellipse", svg: '<ellipse cx="10" cy="10" rx="7" ry="5"/>' },
-      { t: "line", tip: "Line", svg: '<line x1="3" y1="16" x2="17" y2="4"/>' },
-      { t: "arrow", tip: "Arrow: movement or direction", svg: '<line x1="3" y1="16" x2="15" y2="5"/><path d="M10 4 h6 v6"/>' },
-      { t: "text", tip: "Text label (T)", svg: '<path d="M4 5 h12"/><path d="M10 5 v11"/><path d="M7.5 16 h5"/>' },
-      { t: "brush", tip: "Brush: freehand", svg: '<path d="M3 17 C6 10 8 14 11 8 C13 4 15 6 17 3"/>' } ] },
-    { group: "Props", items: [
-      { p: "actor", tip: "Actor", svg: '<circle cx="10" cy="7" r="3"/><path d="M5 17 C5 12 15 12 15 17"/>' },
-      { p: "extra", tip: "Extra", svg: '<circle cx="10" cy="7" r="2.6" stroke-dasharray="2 2"/><path d="M5.5 17 C5.5 12.5 14.5 12.5 14.5 17" stroke-dasharray="2 2"/>' },
-      { p: "car", tip: "Car", svg: '<rect x="2" y="6" width="16" height="8" rx="3"/><path d="M6.5 6 L8 9 h5 l1.5-3"/><rect x="8" y="9" width="5" height="5" rx="1"/>' },
-      { p: "gmc", tip: "Van or SUV, 6 seats", svg: '<rect x="1.5" y="6" width="17" height="8" rx="2"/><path d="M6 6 V14 M11 6 V14"/>' },
-      { p: "light", tip: "Light", svg: '<circle cx="10" cy="10" r="3.5"/><path d="M10 2.5v2M10 15.5v2M2.5 10h2M15.5 10h2M4.8 4.8l1.4 1.4M13.8 13.8l1.4 1.4M15.2 4.8L13.8 6.2M6.2 13.8L4.8 15.2"/>' },
-      { p: "lamp", tip: "Lamp or fresnel", svg: '<rect x="7" y="3" width="6" height="6" rx="1"/><path d="M4 13 L7 9 M16 13 L13 9 M10 15 V9"/><path d="M4 13 h12" stroke-dasharray="2 2"/>' },
-      { p: "panel", tip: "LED panel or softbox", svg: '<rect x="3" y="11" width="14" height="5" rx="1"/><path d="M4 8 L6 4 M10 8 V4 M16 8 L14 4"/>' },
-      { p: "bounce", tip: "Bounce board", svg: '<rect x="2" y="11" width="16" height="4" rx="1"/><path d="M5 11 L7 6 M10 11 L12 6 M15 11 L17 6"/>' },
-      { p: "flag", tip: "Flag or neg", svg: '<rect x="2" y="12" width="16" height="4" rx="1" fill="currentColor" stroke="none"/>' },
-      { p: "table", tip: "Table", svg: '<rect x="3" y="6" width="14" height="8" rx="1"/>' },
-      { p: "chair", tip: "Chair", svg: '<rect x="6" y="7.5" width="8" height="7.5"/><line x1="6" y1="7.5" x2="14" y2="7.5" stroke-width="2.6"/>' },
-      { p: "plant", tip: "Plant or dressing", svg: '<path d="M7 17 h6 l-1-5 H8 Z"/><path d="M10 12 V7"/><path d="M10 8 C6 8 5 5 7 3 C9 2 10 5 10 8 Z"/><path d="M10 9 C14 9 15 6 13 4.5 C11 3.5 10 6 10 9 Z"/>' },
-      { p: "mark", tip: "Mark or note", svg: '<circle cx="10" cy="10" r="2"/><circle cx="10" cy="10" r="6.5" stroke-dasharray="2 2"/>' } ] }
-  ];
-  var PROP_HIT = { actor:[40,32], extra:[38,30], car:[186,80], gmc:[240,88], light:[50,50], lamp:[40,40], panel:[56,28],
-    bounce:[68,26], flag:[62,22], table:[66,42], chair:[30,28], plant:[36,36], mark:[34,34] };
+  // the toolbar's groups and every object's drawing live in floorplan-props.js
+  var TOOLS = FP.floorplanProps.TOOLS, PROP_HIT = FP.floorplanProps.HIT;
 
   // ---------- page state (not part of the project) ----------
   var H = null, svg = null;
@@ -149,36 +119,14 @@
     return false;
   }
   function seats(l){ return l.map(function(s){ return '<rect class="p-seat" x="' + (s[0] - 11) + '" y="' + (s[1] - 11) + '" width="22" height="22" rx="5"/>'; }).join(""); }
-  function propShape(kind){
-    var beam = '<path class="p-beam" d="M0,-6 L-38,-70 L38,-70 Z"/>';
-    switch (kind){
-      case "actor": return '<ellipse class="p-fill" rx="15" ry="9.5"/><circle class="p-head" r="7"/><line class="p-face" x1="0" y1="-7" x2="0" y2="-10.5"/>';
-      case "extra": return '<ellipse class="p-line" rx="14" ry="9" stroke-dasharray="3 3"/><circle class="p-line" r="6.5" stroke-dasharray="3 3"/><line class="p-face" x1="0" y1="-6.5" x2="0" y2="-9.5"/>';
-      case "car": return '<rect class="p-wheel" x="42" y="-38" width="26" height="11" rx="4"/><rect class="p-wheel" x="42" y="27" width="26" height="11" rx="4"/>' +
-        '<rect class="p-wheel" x="-68" y="-38" width="26" height="11" rx="4"/><rect class="p-wheel" x="-68" y="27" width="26" height="11" rx="4"/>' +
-        '<rect class="p-fill" x="-88" y="-34" width="176" height="68" rx="24"/><path class="p-fill" d="M40,-33 Q66,-31 80,-20 L80,20 Q66,31 40,33 Z"/>' +
-        '<line class="p-line" x1="40" y1="-33" x2="40" y2="33"/><line class="p-line" x1="-40" y1="-33" x2="-40" y2="33"/>' +
-        '<circle class="p-line" cx="26" cy="-16" r="7"/>' + seats([[10, -16], [10, 16], [-30, -16], [-30, 16]]) + '<path class="p-dir" d="M104,0 L92,-8 L92,8 Z"/>';
-      case "gmc": return '<rect class="p-wheel" x="56" y="-42" width="30" height="12" rx="4"/><rect class="p-wheel" x="56" y="30" width="30" height="12" rx="4"/>' +
-        '<rect class="p-wheel" x="-86" y="-42" width="30" height="12" rx="4"/><rect class="p-wheel" x="-86" y="30" width="30" height="12" rx="4"/>' +
-        '<rect class="p-fill" x="-114" y="-38" width="228" height="76" rx="16"/><path class="p-fill" d="M74,-37 Q98,-35 108,-24 L108,24 Q98,35 74,37 Z"/>' +
-        '<line class="p-line" x1="74" y1="-37" x2="74" y2="37"/><line class="p-line" x1="18" y1="-37" x2="18" y2="37"/><line class="p-line" x1="-42" y1="-37" x2="-42" y2="37"/>' +
-        '<circle class="p-line" cx="58" cy="-18" r="7"/>' + seats([[42, -18], [42, 18], [-10, -18], [-10, 18], [-70, -18], [-70, 18]]) + '<path class="p-dir" d="M130,0 L118,-9 L118,9 Z"/>';
-      case "light": return '<circle class="p-warm" r="11"/><path class="p-line" d="M0,-15 V-21 M0,15 V21 M-15,0 H-21 M15,0 H21 M-10.6,-10.6 L-15,-15 M10.6,10.6 L15,15 M10.6,-10.6 L15,-15 M-10.6,10.6 L-15,15"/>';
-      case "lamp": return beam + '<circle class="p-warm" r="12"/><path class="p-line" d="M-12,-4 H12 M-9,4 H9"/>';
-      case "panel": return beam + '<rect class="p-warm" x="-24" y="-8" width="48" height="16" rx="2"/><path class="p-line" d="M-12,-8 V8 M0,-8 V8 M12,-8 V8"/>';
-      case "bounce": return '<rect class="p-fill" x="-30" y="-4" width="60" height="8" rx="2"/><path class="p-line" d="M-22,-4 L-16,-14 M-6,-4 L0,-14 M10,-4 L16,-14"/>';
-      case "flag": return '<rect class="p-flag" x="-28" y="-4" width="56" height="8" rx="1"/>';
-      case "table": return '<rect class="p-line" x="-30" y="-18" width="60" height="36" rx="3"/>';
-      case "chair": return '<rect class="p-line" x="-12" y="-11" width="24" height="22" rx="2"/><line class="p-line" x1="-12" y1="-11" x2="12" y2="-11" stroke-width="4"/>';
-      case "plant":
-        var pl = "";
-        for (var a = 0; a < 6; a++){ var r = a * Math.PI / 3; pl += '<circle class="p-leaf" cx="' + (Math.cos(r) * 9).toFixed(1) + '" cy="' + (Math.sin(r) * 9).toFixed(1) + '" r="7"/>'; }
-        return pl + '<circle class="p-fill" r="5"/>';
-      default: return '<circle class="p-line" r="4"/><circle class="p-line" r="13" stroke-dasharray="3 3"/>';
-    }
+  function propShape(kind){ return FP.floorplanProps.shape(kind); }
+  function hitSize(kind){ return PROP_HIT[kind] || [36, 36]; }
+  // how far below its centre, on screen, a turned and scaled object ends: its label goes there
+  function labelDrop(pr, sc){
+    var d = hitSize(pr.kind), r = (pr.rot || 0) * Math.PI / 180;
+    return (Math.abs(d[0] / 2 * Math.sin(r)) + Math.abs(d[1] / 2 * Math.cos(r))) * sc + 14;
   }
-  function propHit(kind){ var d = PROP_HIT[kind] || [36, 36]; return '<rect class="p-hit" x="' + (-d[0] / 2) + '" y="' + (-d[1] / 2) + '" width="' + d[0] + '" height="' + d[1] + '"/>'; }
+  function propHit(kind){ var d = hitSize(kind); return '<rect class="p-hit" x="' + (-d[0] / 2) + '" y="' + (-d[1] / 2) + '" width="' + d[0] + '" height="' + d[1] + '"/>'; }
 
   function svgHTML(){
     var s = '<rect class="fp-paper" width="' + W + '" height="' + Hh + '"/><g class="fp-grid-minor">', x, y, overlay = "";
@@ -247,8 +195,8 @@
       var c = marked("prop", i) ? " sel" : "", sc = pr.sc == null ? 1 : pr.sc;
       s += '<g class="fp-prop' + c + '" data-type="prop" data-i="' + i + '" transform="translate(' + pr.x + ',' + pr.y + ') rotate(' + (pr.rot || 0) + ') scale(' + sc + ')">' +
         propHit(pr.kind) + propShape(pr.kind) +
-        (pr.label ? '<text y="' + (30 / sc).toFixed(1) + '" text-anchor="middle" transform="rotate(' + (-(pr.rot || 0)) + ') scale(' + (1 / sc).toFixed(3) + ')">' + esc(pr.label) + '</text>' : "") +
-        (c ? '<circle class="fp-rot" data-type="proprot" data-i="' + i + '" cy="' + (-44 / sc).toFixed(1) + '" r="' + (7 / sc).toFixed(1) + '"/>' : "") + '</g>';
+        (pr.label ? '<text y="' + labelDrop(pr, sc).toFixed(1) + '" text-anchor="middle" transform="rotate(' + (-(pr.rot || 0)) + ') scale(' + (1 / sc).toFixed(3) + ')">' + esc(pr.label) + '</text>' : "") +
+        (c ? '<circle class="fp-rot" data-type="proprot" data-i="' + i + '" cy="' + (-(hitSize(pr.kind)[1] / 2) - 18 / sc).toFixed(1) + '" r="' + (7 / sc).toFixed(1) + '"/>' : "") + '</g>';
     });
 
     var shotsById = liveShots();
@@ -366,13 +314,19 @@
       sceneId = at ? at.id : (p.scenes[0] ? p.scenes[0].id : "");
     }
   }
+  // groups fold away; which ones are folded is remembered on this device
+  var folded = {};
+  try { folded = JSON.parse(localStorage.getItem("fp.fpFolded") || "{}") || {}; } catch (err){ folded = {}; }
+  function saveFolded(){ try { localStorage.setItem("fp.fpFolded", JSON.stringify(folded)); } catch (err){} }
   function toolbarHTML(){
     return TOOLS.map(function(g){
-      return '<div class="fp-tlabel">' + esc(g.group) + '</div><div class="fp-tgroup">' + g.items.map(function(it){
+      var shut = !!folded[g.group] && !g.items.some(function(it){ return it.p ? (tool === "prop" && propKind === it.p) : tool === it.t; });
+      return '<button type="button" class="fp-tlabel" data-fpgroup="' + esc(g.group) + '" aria-expanded="' + !shut + '">' + esc(g.group) +
+        '<span class="car" aria-hidden="true">▾</span></button><div class="fp-tgroup' + (shut ? " shut" : "") + '">' + g.items.map(function(it){
         var on = it.p ? (tool === "prop" && propKind === it.p) : tool === it.t;
         return '<button type="button" class="fp-tool' + (on ? " active" : "") + '" ' + (it.p ? 'data-fpprop="' + it.p + '"' : 'data-fptool="' + it.t + '"') +
           ' aria-label="' + esc(it.tip) + '" aria-pressed="' + on + '" data-tip="' + esc(it.tip) + '">' +
-          '<svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + it.svg + '</svg></button>';
+          '<svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + it.svg + '</svg></button>';
       }).join("") + '</div>';
     }).join("");
   }
@@ -705,6 +659,14 @@
     host.addEventListener("click", function(e){
       var b = e.target.closest("button");
       if (!b || !host.contains(b)) return;
+      if (b.hasAttribute("data-fpgroup")){
+        var gname = b.getAttribute("data-fpgroup"), open = b.getAttribute("aria-expanded") !== "true";
+        b.setAttribute("aria-expanded", open ? "true" : "false");
+        b.nextElementSibling.classList.toggle("shut", !open);
+        if (open) delete folded[gname]; else folded[gname] = true;
+        saveFolded();
+        return;
+      }
       if (b.hasAttribute("data-fptool")) setTool(b.getAttribute("data-fptool"));
       else if (b.hasAttribute("data-fpprop")) setTool("prop", b.getAttribute("data-fpprop"));
       var act = b.getAttribute("data-fpact");

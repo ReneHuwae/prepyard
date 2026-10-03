@@ -6,9 +6,16 @@
 
 .fp-workspace{ display:grid; grid-template-columns:auto minmax(0, 1fr) 240px; border-bottom:1px solid var(--line); }
 .fp-toolbar{ display:flex; flex-direction:column; gap:6px; padding:12px 10px; border-right:1px solid var(--line); background:var(--bg-raised); }
-.fp-tlabel{ font-size:9.5px; font-weight:700; color:var(--ink-faint); letter-spacing:.06em; text-transform:uppercase; margin-top:6px; }
+.fp-tlabel{ display:flex; align-items:center; justify-content:space-between; gap:6px; width:100%; padding:2px 0; margin-top:6px;
+  background:none; border:none; border-radius:0; font:inherit; font-size:9.5px; font-weight:700; color:var(--ink-faint);
+  letter-spacing:.06em; text-transform:uppercase; cursor:pointer; text-align:left; }
+.fp-tlabel:hover{ color:var(--ink); }
 .fp-tlabel:first-child{ margin-top:0; }
-.fp-tgroup{ display:grid; grid-template-columns:repeat(2, 34px); gap:4px; }
+.fp-tlabel .car{ font-size:9px; transition:transform .12s; }
+.fp-tlabel[aria-expanded="false"] .car{ transform:rotate(-90deg); }
+.fp-tlabel[data-fpgroup="Lights"]{ color:var(--light); }
+.fp-tgroup{ display:grid; grid-template-columns:repeat(3, 34px); gap:4px; }
+.fp-tgroup.shut{ display:none; }
 .fp-tool{ position:relative; width:34px; height:34px; display:flex; align-items:center; justify-content:center; padding:0;
   border:1px solid transparent; background:none; color:var(--ink-soft); border-radius:0; }
 .fp-tool:hover{ color:var(--ink); border-color:var(--line); }
@@ -71,21 +78,42 @@
 .fp-cam text.fp-cam-meta{ font-size:10px; font-weight:500; fill:var(--ink-soft); }
 
 .fp-prop{ cursor:move; }
+/* objects: an ink line, a light grey body, amber for anything that makes light */
 .p-hit{ fill:transparent; }
-.p-line{ stroke:var(--ink); stroke-width:2; fill:none; }
-.p-fill{ fill:color-mix(in srgb, var(--ink) 8%, var(--bg-raised)); stroke:var(--ink); stroke-width:2; }
-.p-head{ fill:var(--bg-raised); stroke:var(--ink); stroke-width:2; }
-.p-face{ stroke:var(--ink); stroke-width:2.5; stroke-linecap:round; }
-.p-wheel{ fill:var(--ink-soft); }
-.p-seat{ fill:var(--bg-raised); stroke:var(--ink-faint); stroke-width:1.5; }
-.p-dir{ fill:var(--ink); }
-.p-warm{ fill:color-mix(in srgb, var(--light) 25%, var(--bg-raised)); stroke:var(--light); stroke-width:2; }
-.p-beam{ fill:var(--light); opacity:.16; pointer-events:none; }
-.p-flag{ fill:var(--ink); }
-.p-leaf{ fill:color-mix(in srgb, var(--cam) 20%, var(--bg-raised)); stroke:var(--cam); stroke-width:1.5; }
+.fp-prop [class^="p-"]{ stroke-linejoin:round; }
+.p-line{ stroke:var(--ink); stroke-width:1.6; fill:none; }
+.p-thin{ stroke:var(--ink-faint); stroke-width:1; fill:none; }
+.p-faint{ stroke:var(--line); stroke-width:1; fill:none; }
+.p-swing{ stroke:var(--ink-faint); stroke-width:1; stroke-dasharray:2 2; fill:none; }
+.p-fill{ fill:color-mix(in srgb, var(--ink) 8%, var(--bg-raised)); stroke:var(--ink); stroke-width:1.6; }
+.p-white{ fill:var(--bg-raised); stroke:var(--ink); stroke-width:1.6; }
+.p-inset{ fill:none; stroke:var(--bg-raised); stroke-width:1.2; }
+.p-glass{ fill:var(--ink-soft); stroke:var(--ink); stroke-width:1.6; }
+.p-solid{ fill:var(--ink); stroke:var(--ink); stroke-width:1.6; }
+.p-muted{ fill:var(--ink-faint); stroke:var(--ink); stroke-width:1.6; }
+.p-dot{ fill:var(--ink); }
+.p-tyre{ fill:var(--ink-soft); }
+.p-seat{ fill:var(--bg-raised); stroke:var(--ink-faint); stroke-width:1.4; }
+.p-seatback{ fill:var(--line); stroke:var(--ink-faint); stroke-width:1.4; }
+.p-ghost{ fill:var(--bg-raised); stroke:var(--ink-faint); stroke-width:1.6; stroke-dasharray:3 2.4; }
+.p-ghost-dot{ fill:var(--ink-faint); }
+.p-mark{ fill:var(--notes); }
+.p-warm{ fill:color-mix(in srgb, var(--light) 18%, var(--bg-raised)); stroke:var(--light); stroke-width:1.6; }
+.p-amber{ fill:var(--light); }
+.p-amber-line{ stroke:var(--light); stroke-width:1.6; fill:none; stroke-linecap:round; }
+.p-sunray{ stroke-width:1; stroke-dasharray:2 3; opacity:.6; }
+.p-sun{ fill:color-mix(in srgb, var(--light) 60%, var(--bg-raised)); stroke:var(--light); stroke-width:1.6; }
+.p-halo{ fill:var(--light); opacity:.1; pointer-events:none; }
+.p-beam{ fill:var(--light); opacity:.13; pointer-events:none; }
+.p-beam.soft{ opacity:.09; }
+.p-leaf{ fill:color-mix(in srgb, var(--cam) 12%, var(--bg-raised)); stroke:var(--cam); stroke-width:1.3; }
+.p-dolly{ fill:color-mix(in srgb, var(--cam) 15%, var(--bg-raised)); stroke:var(--cam); stroke-width:1.6; }
+.p-dolly-seat{ stroke:var(--cam); }
+.p-camdot{ fill:var(--cam); }
 .fp-prop text{ font-family:var(--font-ui); font-size:11px; font-weight:600; fill:var(--ink-soft); pointer-events:none; }
-.fp-prop.sel .p-line, .fp-prop.sel .p-fill, .fp-prop.sel .p-head, .fp-prop.sel .p-face, .fp-prop.sel .p-warm,
-.fp-prop.sel .p-seat, .fp-prop.sel .p-leaf{ stroke:var(--accent); }
+.fp-prop.sel .p-line, .fp-prop.sel .p-fill, .fp-prop.sel .p-white, .fp-prop.sel .p-glass, .fp-prop.sel .p-solid,
+.fp-prop.sel .p-warm, .fp-prop.sel .p-leaf, .fp-prop.sel .p-dolly, .fp-prop.sel .p-sun{ stroke:var(--accent); }
+.fp-prop.sel .p-dot, .fp-prop.sel .p-mark{ fill:var(--accent); }
 .fp-wall.sel, .fp-door-leaf.sel, .fp-door-arc.sel, .fp-window.sel, .fp-shape.sel{ stroke:var(--accent); }
 .fp-text.sel, .fp-arrowhead.sel{ fill:var(--accent); }
 
@@ -96,7 +124,7 @@
 @media (max-width: 760px){
   .fp-workspace{ grid-template-columns:1fr; }
   .fp-toolbar{ flex-direction:row; flex-wrap:wrap; border-right:none; border-bottom:1px solid var(--line); align-items:center; }
-  .fp-tgroup{ display:flex; flex-wrap:wrap; }
+  .fp-tgroup, .fp-tgroup.shut{ display:flex; flex-wrap:wrap; }
   .fp-tlabel{ display:none; }
   .fp-tool::after{ display:none; }
   .fp-pick .cell-sel.boxed{ min-width:0; max-width:46vw; }
