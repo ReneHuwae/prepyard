@@ -156,6 +156,14 @@
       html: d.scriptHTML || "", drawHTML: d.scriptDrawHTML || "", paper: d.paper || null };
 
     p.schedule = { days: d.scheduleHTML ? convertSchedule(d.scheduleHTML) : [] };
+    // the classic schedule named scenes by number; the model names them by id
+    p.schedule.days.forEach(function(day){
+      day.rows.forEach(function(r){
+        if (r.type !== "scene") return;
+        var sc = p.scenes.filter(function(s){ return s.num.trim() === r.scene.trim(); })[0];
+        r.sceneId = sc ? sc.id : "";
+      });
+    });
 
     if (d.camerasHTML !== undefined || d.lensSetsHTML !== undefined){
       p.cameras = all(parse(d.camerasHTML), ".cam-box").map(function(b){

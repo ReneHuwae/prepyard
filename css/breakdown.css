@@ -1,0 +1,88 @@
+/* Breakdown, Rev. 08: hairline cards, the scene's needs on a grey left column,
+   its images and shots on the right. Fields read as text until you point at them. */
+.bd-cards{ padding:22px; display:grid; gap:18px; }
+.bd-empty{ display:grid; gap:14px; justify-items:start; padding:6px 0 10px; }
+.bd-empty p{ margin:0; color:var(--ink-soft); max-width:60ch; line-height:1.55; }
+
+.bcard{ border:1px solid var(--line); display:grid; grid-template-columns:280px minmax(0, 1fr); scroll-margin-top:16px; }
+.bcard-left{ padding:18px; border-right:1px solid var(--line); background:var(--bg); min-width:0; }
+.bcard-right{ padding:18px; display:flex; flex-direction:column; gap:14px; min-width:0; }
+.bcard-eyebrow{ display:flex; gap:10px; align-items:baseline; margin-bottom:4px; }
+.bcard-scene{ font-size:11px; color:var(--accent); font-weight:700; letter-spacing:.03em; white-space:nowrap; }
+.bcard-slug{ font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.03em; flex:1; min-width:0; }
+.bcard-menu{ width:24px; height:22px; padding:0; border:1px solid transparent; background:none; color:var(--ink-faint);
+  font-size:15px; line-height:1; border-radius:0; align-self:center; }
+.bcard-menu:hover, .bcard-menu:focus-visible{ color:var(--ink); border-color:var(--line); }
+
+/* in-place fields */
+.bcard-title, .bcard-summary, .baction, .bd-li{ width:100%; border:1px solid transparent; background:transparent; color:var(--ink);
+  font-family:var(--font-ui); border-radius:0; padding:3px 5px; margin-left:-6px; }
+.bcard-title{ font-family:var(--font-display); font-weight:700; font-size:17px; margin-bottom:2px; }
+.bcard-summary, .baction{ resize:none; overflow:hidden; display:block; line-height:1.5; min-height:26px; }
+.bcard-summary{ font-size:12.5px; color:var(--ink-soft); margin-bottom:12px; }
+.baction{ font-size:13px; color:var(--ink-soft); }
+.bd-li{ font-size:12.5px; color:var(--ink-soft); padding:2px 5px; }
+.bcard-title::placeholder, .bcard-summary::placeholder, .baction::placeholder, .bd-li::placeholder{ color:var(--ink-faint); opacity:.75; }
+.bcard-title:hover, .bcard-summary:hover, .baction:hover, .bd-li:hover{ border-color:var(--line); }
+.bcard-title:focus, .bcard-summary:focus, .baction:focus, .bd-li:focus{ border-color:var(--ink); outline:none; background:var(--bg-raised); }
+
+.btag{ margin-bottom:12px; }
+.btag b, .bcrew b{ display:block; font-size:10.5px; font-weight:700; color:var(--ink-faint); letter-spacing:.04em; margin-bottom:2px; }
+.bd-list{ margin:0; padding:0 0 0 14px; list-style:none; }
+.bd-list li{ position:relative; }
+.bd-list li::before{ content:""; position:absolute; left:-10px; top:12px; width:4px; height:1px; background:var(--ink-faint); }
+
+/* images: the scene's two slots, then a thumb pair on every shot */
+.bslots{ display:grid; grid-template-columns:repeat(2, minmax(0, 300px)); gap:10px; }
+.bslot{ position:relative; aspect-ratio:4/3; min-width:0; background:var(--bg); border:1px dashed var(--line); border-radius:0;
+  display:flex; align-items:center; justify-content:center; font-size:11.5px; color:var(--ink-faint); text-align:center; padding:0; }
+button.bslot:hover{ border-color:var(--ink-soft); color:var(--ink); }
+.bslot.has{ border:1px solid var(--line); display:block; aspect-ratio:auto; }
+.bslot-label{ position:absolute; left:0; top:0; z-index:1; font-size:9.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+  background:var(--ink); color:var(--bg-raised); padding:2px 6px; pointer-events:none; }
+.bslot-grid{ display:grid; grid-template-columns:1fr; gap:2px; }
+.bslot.many .bslot-grid{ grid-template-columns:1fr 1fr; }
+.bslot-img{ display:block; padding:0; border:none; border-radius:0; background:var(--ink); aspect-ratio:4/3; overflow:hidden; cursor:zoom-in; }
+.bslot-img img{ width:100%; height:100%; object-fit:cover; display:block; }
+.bslot-img:hover img{ opacity:.88; }
+.bslot-add{ aspect-ratio:4/3; border:1px dashed var(--line); background:var(--bg); color:var(--ink-faint); font-size:18px; border-radius:0; padding:0; }
+.bslot:not(.many) .bslot-add{ aspect-ratio:auto; height:30px; font-size:14px; }
+.bslot-add:hover{ color:var(--ink); border-color:var(--ink-soft); }
+
+.bshots{ display:grid; }
+.bshots-empty{ margin:0; font-size:13px; color:var(--ink-faint); }
+.bshot-row{ display:grid; grid-template-columns:38px minmax(0, 1fr) 76px 76px; gap:12px; padding:12px 0; border-top:1px solid var(--line); align-items:start; }
+.bshot-row:first-child{ border-top:none; padding-top:2px; }
+.bnum{ font-size:13px; font-weight:700; color:var(--ink); background:none; border:1px solid transparent; border-radius:0;
+  padding:3px 4px; text-align:left; font-variant-numeric:tabular-nums; }
+.bnum:hover, .bnum:focus-visible{ color:var(--accent); border-color:var(--line); }
+.bshot-body{ min-width:0; }
+.btags{ display:flex; gap:6px; margin:3px 0 4px; flex-wrap:wrap; }
+.btags span{ font-size:10px; font-weight:700; letter-spacing:.03em; border:1px solid var(--line-strong); padding:2px 6px; text-transform:uppercase; }
+.bcrew{ margin-top:6px; padding-left:8px; border-left:2px solid var(--line); }
+.bshot-thumb{ position:relative; width:76px; height:54px; border:1px dashed var(--line); background:var(--bg); border-radius:0; padding:0;
+  display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--ink-faint); text-align:center; overflow:hidden; }
+.bshot-thumb:hover{ border-color:var(--ink-soft); color:var(--ink); }
+.bshot-thumb.has{ border:1px solid var(--line-strong); background:var(--ink); cursor:zoom-in; }
+.bshot-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.bshot-thumb .thumb-n{ position:absolute; right:0; bottom:0; font-size:9px; font-weight:700; background:var(--ink); color:var(--bg-raised); padding:1px 3px; }
+.bcard-addshot{ align-self:flex-start; }
+
+/* the image viewer */
+.modal.modal-wide{ max-width:920px; }
+.bd-gallery{ display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:14px; max-height:70vh; overflow:auto; }
+.bd-gallery figure{ margin:0; border:1px solid var(--line); }
+.bd-gallery img{ width:100%; display:block; background:var(--ink); }
+.bd-gallery figcaption{ display:flex; gap:8px; padding:8px; border-top:1px solid var(--line); }
+
+@media (max-width: 860px){
+  .bcard{ grid-template-columns:1fr; }
+  .bcard-left{ border-right:none; border-bottom:1px solid var(--line); }
+}
+@media (max-width: 560px){
+  .bd-cards{ padding:12px; }
+  .bslots{ grid-template-columns:1fr 1fr; gap:6px; }
+  .bshot-row{ grid-template-columns:32px minmax(0, 1fr) 64px; }
+  .bshot-row .bshot-thumb{ width:64px; height:46px; }
+  .bshot-row .bshot-thumb:last-child{ grid-column:3; }
+}

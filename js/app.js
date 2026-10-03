@@ -427,8 +427,9 @@
   }
   function renderPage(){
     var page = FP.pages[currentPage];
-    var host = $("page");
-    host.innerHTML = "";
+    // a fresh host each time, so listeners a page attached to it leave with the page
+    var old = $("page"), host = old.cloneNode(false);
+    old.parentNode.replaceChild(host, old);
     page.render(host, FP.project());
   }
   function setMoreOpen(open){

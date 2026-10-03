@@ -9,7 +9,6 @@ table.sl{ width:100%; border-collapse:collapse; font-size:13px; min-width:1500px
 table.sl thead th{ text-align:left; font-size:10.5px; font-weight:700; letter-spacing:.04em; color:var(--ink-faint);
   padding:11px 10px; border-bottom:1px solid var(--line-strong); border-top:1px solid var(--line); border-right:1px solid var(--line);
   white-space:nowrap; background:var(--bg); }
-table.sl thead th.core{ color:var(--ink); }
 table.sl thead th:last-child{ border-right:none; }
 table.sl td{ padding:5px 8px; border-bottom:1px solid var(--line); border-right:1px solid var(--line); vertical-align:middle; }
 table.sl td:last-child{ border-right:none; }

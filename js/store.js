@@ -119,7 +119,7 @@
         return { id: d.id || FP.uid("d"), date: str(d.date), call: str(d.call) || "06:00",
           rows: arr(d.rows).filter(function(r){ return r && r.type; }).map(function(r){
             if (r.type === "break") return { id: r.id || FP.uid("r"), type: "break", label: str(r.label), mins: +r.mins || 0 };
-            if (r.type === "scene") return { id: r.id || FP.uid("r"), type: "scene", scene: str(r.scene), done: !!r.done };
+            if (r.type === "scene") return { id: r.id || FP.uid("r"), type: "scene", sceneId: str(r.sceneId), scene: str(r.scene), done: !!r.done };
             return { id: r.id || FP.uid("r"), type: "shot", shotId: str(r.shotId), prep: +r.prep || 0, shoot: +r.shoot || 0 };
           }) };
       }) },
@@ -391,6 +391,14 @@
     session.lastKey = key || null;
     session.lastTime = now;
     afterChange({ key: key });
+  };
+  // Bookkeeping that follows from the project itself (a new shot getting its schedule row),
+  // saved but not an undo step of its own: undoing past it simply makes it happen again.
+  FP.quietChange = function(fn){
+    if (!session) return;
+    fn(session.project);
+    session.dirty = true;
+    scheduleSave();
   };
   FP.canUndo = function(){ return !!(session && session.past.length); };
   FP.canRedo = function(){ return !!(session && session.future.length); };
