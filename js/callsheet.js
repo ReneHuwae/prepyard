@@ -1,6 +1,6 @@
 /* Callsheet page, Rev. 08: one sheet per shooting day, built from what the project
    already knows (the schedule's day, its scenes and times; the location and its sun;
-   the crew and cast) plus the few things only a callsheet holds: production details,
+   the cast and crew) plus the few things only a callsheet holds: production details,
    transport, and the day's logistics. The sheet on the right redraws as you type. */
 (function(){
   "use strict";
@@ -127,13 +127,13 @@
         cast.map(function(c, i){
           return '<tr><td class="tn">' + (i + 1) + '</td><td><b>' + dash(c.character) + '</b></td><td>' + dash(c.actor) + '</td><td class="tn">' + dash(c.pickup) + '</td><td>' + dash(c.pickedUpBy) +
             '</td><td>' + dash(c.toAddress) + '</td><td class="tn">' + dash(c.wardrobe) + '</td><td class="tn">' + dash(c.makeup) + '</td><td class="tn">' + dash(c.onSet) + '</td></tr>';
-        }).join("") + '</tbody></table>' : '<p class="cs-none">No cast yet. Add them on the Crew page.</p>') +
+        }).join("") + '</tbody></table>' : '<p class="cs-none">No cast yet. Add them on the Cast and crew page.</p>') +
       block("Crew", crew.length ? depts.map(function(dep){
         return '<table class="cs-table cs-crew"><thead><tr><th colspan="5">' + esc(dep) + '</th></tr></thead><tbody>' + byDept[dep].map(function(c){
           return '<tr><td>' + dash(c.role) + '</td><td><b>' + dash(c.name) + '</b></td><td class="tn">' + esc(c.phone) + '</td><td>' + esc(c.email) + '</td>' +
             '<td class="tn cs-call' + (c.call ? " own" : "") + '">' + esc(c.call || d.call) + '</td></tr>';
         }).join("") + '</tbody></table>';
-      }).join("") : '<p class="cs-none">No crew yet. Add them on the Crew page.</p>') +
+      }).join("") : '<p class="cs-none">No crew yet. Add them on the Cast and crew page.</p>') +
       (rides.length ? block("Transport", '<table class="cs-table"><thead><tr><th>Driver</th><th>Passengers</th><th>From</th><th>To</th><th>Call</th><th>Note</th></tr></thead><tbody>' +
         rides.map(function(t){
           return '<tr><td><b>' + dash(t.who) + '</b></td><td>' + dash(t.passengers) + '</td><td>' + dash(t.from) + '</td><td>' + dash(t.to) + '</td><td class="tn">' + dash(t.call) + '</td><td>' + esc(t.note) + '</td></tr>';
@@ -262,9 +262,9 @@
         (days(p).length ? '<select class="cell-sel boxed" data-cs-day aria-label="Shooting day">' + days(p).map(function(x, i){
           return '<option value="' + esc(x.id) + '"' + (x === d ? " selected" : "") + '>Day ' + (i + 1) + ' · ' + esc(x.date ? fmtDate(x.date) : "no date") + '</option>';
         }).join("") + '</select>' : '<p class="fp-hint">No shooting days yet.</p>') +
-        '<p class="fp-hint">Date, call time and scenes come from the Schedule; crew and cast from the Crew page.</p>' +
+        '<p class="fp-hint">Date, call time and scenes come from the Schedule; cast and crew from the Cast and crew page.</p>' +
         '<div class="rail-btns"><button type="button" class="btn ghost" data-act="go" data-page="schedule">Schedule</button>' +
-          '<button type="button" class="btn ghost" data-act="go" data-page="crew">Crew and cast</button></div>' +
+          '<button type="button" class="btn ghost" data-act="go" data-page="crew">Cast and crew</button></div>' +
       '</div></div>' +
       dayPanel +
       '<div class="cs-panel" data-coll="prod"><div class="tr-h">Production</div><div class="rail-fields">' +
@@ -291,7 +291,7 @@
       return '<div class="shell-body callsheet">' + railHTML(p) +
         '<div class="workwindow"><div class="pg-toolbar"><div class="left"><h3>Callsheet</h3><span class="count">' +
           (days(p).length ? days(p).length + (days(p).length === 1 ? " shooting day" : " shooting days") : "No shooting days yet") + '</span></div>' +
-          '<div class="right"><button type="button" class="btn ghost" data-act="export"' + (days(p).length ? "" : " disabled") + '>Export callsheet PDF</button></div></div>' +
+          '</div>' +
           '<div class="cs-wrap" data-cs-sheet></div></div>' +
       '</div>';
     },
@@ -313,9 +313,6 @@
       },
       "del-ride": function(b, c){
         FP.change(function(p){ p.callsheet.transport = p.callsheet.transport.filter(function(t){ return t.id !== c.rec; }); });
-      },
-      export: function(){
-        if (FP.exports && FP.exports.callsheet) FP.exports.callsheet(dayId);
       }
     },
     bind: function(host){

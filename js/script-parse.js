@@ -309,6 +309,23 @@
           pgbreak: !!(prevEntry && prevEntry.page !== ln.page) });
       }
     }
+    // The page numbers printed on the PDF, so a script that starts at page 45 (or has an
+    // unnumbered title page) keeps its own numbering. Each page's printed number minus its
+    // position gives an offset; the most common one wins, so a stray number can't skew it.
+    var printed = {};
+    allLines.forEach(function(l){
+      var t = (l.text || "").trim();
+      if (!SP_PAGE_NUM.test(t)) return;
+      var n = parseInt(t.replace(/[^0-9]/g, ""), 10);
+      if (!isNaN(n) && printed[l.page] === undefined) printed[l.page] = n;
+    });
+    var order = [], seenPage = {}, votes = {};
+    entries.forEach(function(en){ if (!seenPage[en.page]){ seenPage[en.page] = 1; order.push(en.page); } });
+    order.forEach(function(pg, k){ if (printed[pg] !== undefined){ var d = printed[pg] - (k + 1); votes[d] = (votes[d] || 0) + 1; } });
+    var best = null;
+    Object.keys(votes).forEach(function(d){ if (best === null || votes[d] > votes[best]) best = d; });
+    if (paper) paper.firstPage = best === null ? 1 : 1 + parseInt(best, 10);
+
     var html = entries.map(function(en){
       var attrs = (en.type === "scene" && en.num) ? ' data-num="' + escAttr(en.num) + '"' : "";
       if (en.pgbreak) attrs += ' data-pgbreak="1"';

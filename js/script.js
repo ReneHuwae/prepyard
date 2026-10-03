@@ -436,8 +436,12 @@
     var rects = "";
     for (var q = 0; q < pages; q++) rects += '<div class="script-page" style="top:' + (q * stride) + 'px;height:' + pageH + 'px;"></div>';
     S.pages.innerHTML = rects;
-    var nums = "";
-    for (var n = 1; n < pages; n++) nums += '<span style="top:' + (n * stride + padTop * 0.5) + 'px;">' + (n + 1) + '.</span>';
+    // numbered as in the imported PDF; a script that starts on page 1 leaves page 1 bare, as usual
+    var nums = "", off = pageOffset();
+    for (var n = off ? 0 : 1; n < pages; n++){
+      if (n + 1 + off < 1) continue;
+      nums += '<span style="top:' + (n * stride + padTop * 0.5) + 'px;">' + (n + 1 + off) + '.</span>';
+    }
     S.nums.innerHTML = nums;
     pageStride = stride;
     pageCount = pages;
@@ -457,6 +461,12 @@
   var paginateTimer = null;
   function queuePaginate(){ clearTimeout(paginateTimer); paginateTimer = setTimeout(paginate, 120); }
 
+  // how far the PDF's own page numbers are from counting 1, 2, 3 (an imported script
+  // that starts at page 45 has an offset of 44)
+  function pageOffset(){
+    var f = scriptMode !== "treatment" && scriptPaper && parseInt(scriptPaper.firstPage, 10);
+    return f ? f - 1 : 0;
+  }
   function updatePageNo(){
     if (!S) return;
     if (!S.area.textContent.trim() && !S.area.querySelector(".tm-page")){ S.pageNo.textContent = ""; return; }
@@ -478,7 +488,8 @@
       if (sc) sceneTxt = ", scene " + sc.num;
       markRailActive(sc ? sc.id : null);
     }
-    S.pageNo.textContent = "Page " + page + " of " + Math.max(1, pageCount) + sceneTxt;
+    var off = pageOffset();
+    S.pageNo.textContent = "Page " + Math.max(1, page + off) + " of " + Math.max(1, pageCount + off) + sceneTxt;
   }
 
   // ---------- scene rail ----------

@@ -1,4 +1,4 @@
-/* Crew page, Rev. 08: every department and its usual roles are laid out ready to fill
+/* Cast and crew page, Rev. 08: every department and its usual roles are laid out ready to fill
    in, a card per role. Only filled-in roles are stored; an empty card is just the slot.
    A starred card is a key contact at the top of the callsheet. The cast carry their
    own pickup, wardrobe, make-up and on-set times. */
@@ -78,7 +78,7 @@
     html: function(p){
       var cs = p.callsheet, filled = cs.crew.filter(function(c){ return c.name || c.phone || c.email; }).length, hide = hidden(p);
       return '<div class="workwindow formpage crew">' +
-        '<div class="pg-toolbar"><div class="left"><h3>Crew</h3><span class="count">Entered once, on every day\'s callsheet · ' +
+        '<div class="pg-toolbar"><div class="left"><h3>Cast and crew</h3><span class="count">Entered once, on every day\'s callsheet · ' +
           filled + ' filled in, ' + cs.cast.length + ' cast</span></div>' +
           '<div class="right">' + (hide.length ? '<button type="button" class="btn ghost" data-act="unhide">Show hidden roles (' + hide.length + ')</button>' : "") + '</div></div>' +
         '<div data-coll="crew">' + ROLES.map(function(r){
