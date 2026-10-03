@@ -1,9 +1,10 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
 <meta charset="utf-8" />
-<title>Prepyard - Alpha</title>
+<title>FilmPrep - Alpha</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Instrument+Sans:wght@400;500;600;700&family=Archivo:wght@600;700;800;900&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
   :root{
@@ -501,8 +502,6 @@
   }
 
   /* ================= paper redesign ================= */
-  #importToggle,#saveProjectBtn,#openProjectBtn,
-  #exportShotlistPdfBtn,#exportBreakdownPdfBtn,#exportSchedulePdfBtn{ display:none !important; }
   .project-menu{ display:inline-flex; align-items:center; gap:7px; cursor:pointer;
     padding:3px 8px; border:1px solid transparent; margin-left:-8px; }
   .project-menu:hover{ border-color:var(--border-strong); }
@@ -1706,7 +1705,7 @@
 </style>
 <div id="homeView" class="home-view" hidden>
   <header class="home-topbar">
-    <div class="brand"><span class="brand-mark">🎬</span><h1>Prepyard</h1></div>
+    <div class="brand"><h1>FilmPrep</h1></div>
     <div class="home-topbar-actions">
       <span class="status" id="homeStatusMsg"></span>
       <button class="btn-ghost" id="homeOpenFileBtn" type="button">Open project file…</button>
@@ -1728,20 +1727,50 @@
 <div class="app">
 
   <header class="topbar">
+   <div class="topbar-row1">
     <div class="brand">
-      <span class="brand-mark">🎬</span>
-      <h1>Prepyard</h1>
+      <h1>FilmPrep</h1>
       <span class="project-menu" data-action="open-project-menu" title="Project menu"><span class="project-name" data-placeholder="Untitled project">Untitled project</span><span class="pm-caret">▾</span></span>
       <span class="status" id="statusMsg"></span>
-      <span class="status" id="autosaveNote" title="Auto-saved into this browser every minute — Save Project still writes the file"></span>
     </div>
+    <div class="topbar-actions">
+      <div class="hist-btns">
+        <button class="btn-ghost icon-btn" id="undoBtn" type="button" title="Undo" disabled>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
+        </button>
+        <button class="btn-ghost icon-btn" id="redoBtn" type="button" title="Redo" disabled>
+          <svg class="icon-flip" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
+        </button>
+      </div>
+      <span class="status" id="autosaveNote" title="Auto-saved into this browser every minute — Save project still writes the file"></span>
+      <button class="btn-ghost icon-btn" id="shareProjectBtn" type="button" title="Save this project as a file to share">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><path d="M8 7.5 12 3.5l4 4"/><path d="M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"/></svg>
+      </button>
+      <button class="btn-ghost icon-btn" id="prefsBtn" type="button" title="Preferences">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .32 1.77l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.6 1.6 0 0 0-1.77-.32 1.6 1.6 0 0 0-1 1.47V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1.05-1.46 1.6 1.6 0 0 0-1.77.32l-.6.06a2 2 0 1 1-2.83-2.83l.06-.06A1.6 1.6 0 0 0 4.6 15a1.6 1.6 0 0 0-1.47-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 8.9a1.6 1.6 0 0 0-.33-1.77l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.6 1.6 0 0 0 8.87 4.6 1.6 1.6 0 0 0 9.87 3.13V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.47 1.6 1.6 0 0 0 1.77-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.6 1.6 0 0 0-.32 1.77V9a1.6 1.6 0 0 0 1.46 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+      </button>
+      <button class="btn-primary" id="exportMenuBtn" type="button" title="Export or save this project">Export</button>
+    </div>
+   </div>
+   <!-- real handlers for the Export menu and the project menu; never shown in the bar itself -->
+   <div class="topbar-hidden-actions">
+      <button class="btn-ghost" id="goHomeBtn" type="button" title="My projects">My projects</button>
+      <button class="btn-ghost" id="importToggle">Paste shotlist</button>
+      <button class="btn-ghost" id="saveProjectBtn" type="button" title="Download this project as a file">Save project</button>
+      <button class="btn-ghost" id="openProjectBtn" type="button" title="Open a previously saved project file">Open project</button>
+      <button class="btn-ghost" id="exportShotlistPdfBtn" type="button" title="Download the shotlist table as a PDF">Export shotlist PDF</button>
+      <button class="btn-ghost" id="exportBreakdownPdfBtn" type="button" title="Download the breakdown as a PDF">Export breakdown PDF</button>
+      <button class="btn-ghost" id="exportSchedulePdfBtn" type="button" title="Download the shooting schedule as a PDF">Export schedule PDF</button>
+   </div>
     <nav class="tabs">
       <button class="tab" data-tab="script">Script</button>
       <button class="tab active" data-tab="shotlist">Shotlist</button>
       <button class="tab" data-tab="breakdown">Breakdown</button>
       <button class="tab" data-tab="schedule">Schedule</button>
+      <button class="tab" data-tab="floorplan">Floor plan</button>
+      <button class="tab" data-tab="callsheet">Callsheet</button>
       <button type="button" class="tab tab-more" id="moreTabsBtn" data-action="open-tabs-menu"
-        title="Camera, Locations, Floor plan, Sun path" aria-haspopup="true" aria-label="Camera, Locations, Floor plan, Sun path">
+        title="Camera, Locations, Sun path" aria-haspopup="true" aria-label="Camera, Locations, Sun path">
         <svg class="tab-more-icon" viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor"
           stroke-width="2" stroke-linecap="round" aria-hidden="true">
           <line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/>
@@ -1749,23 +1778,6 @@
         <span class="tab-more-label">More</span>
       </button>
     </nav>
-    <div class="hist-btns">
-      <button class="btn-ghost icon-btn" id="goHomeBtn" type="button" title="My projects (this project keeps auto-saving)">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg>
-      </button>
-      <button class="btn-ghost icon-btn" id="undoBtn" type="button" title="Undo" disabled>
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
-      </button>
-      <button class="btn-ghost icon-btn" id="redoBtn" type="button" title="Redo" disabled>
-        <svg class="icon-flip" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
-      </button>
-    </div>
-    <button class="btn-ghost" id="importToggle">Paste shotlist</button>
-    <button class="btn-ghost" id="saveProjectBtn" type="button" title="Download this project as a file">Save Project</button>
-    <button class="btn-ghost" id="openProjectBtn" type="button" title="Open a previously saved project file">Open Project</button>
-    <button class="btn-ghost" id="exportShotlistPdfBtn" type="button" title="Download the shotlist table as a PDF">Export Shotlist PDF</button>
-    <button class="btn-ghost" id="exportBreakdownPdfBtn" type="button" title="Download the breakdown as a PDF">Export Breakdown PDF</button>
-    <button class="btn-ghost" id="exportSchedulePdfBtn" type="button" title="Download the shooting schedule as a PDF">Export Schedule PDF</button>
   </header>
 
   <section id="autosaveBar" artifact-local hidden>
@@ -1797,6 +1809,11 @@
 
   <main>
     <section id="scriptView" class="view">
+      <aside class="script-rail" id="scriptRail">
+        <div class="sr-head"><span id="srCount">Scenes</span></div>
+        <div class="sr-list" id="srList"></div>
+        <p class="sr-empty" id="srEmpty">No scenes yet. Use <b>Generate scenes &amp; locations</b> once your script is in, or add them on the Shotlist.</p>
+      </aside>
       <div class="script-toolbars">
       <div class="script-toolbar">
         <div class="stb-group">
@@ -2247,7 +2264,7 @@
       if (missingIds.indexOf(id) === -1){
         missingIds.push(id);
         if (window.console && console.warn){
-          console.warn("Prepyard: no element #" + id + " to bind " + evt + " to");
+          console.warn("FilmPrep: no element #" + id + " to bind " + evt + " to");
         }
       }
       return null;
@@ -3180,7 +3197,7 @@ function renderScheduleFirstDay(){
   // ---------- tabs ----------
   // Camera / Locations / Floor plan / Sun path live behind the "More" tab-group trigger
   // instead of each taking their own slot in the top bar.
-  var GROUPED_TABS = { camera: "Camera", locations: "Locations", floorplan: "Floor plan", sun: "Sun path", callsheet: "Callsheet" };
+  var GROUPED_TABS = { camera: "Camera", locations: "Locations", sun: "Sun path" };
   var moreTabsBtn = document.getElementById("moreTabsBtn");
   var moreTabsLabel = moreTabsBtn && moreTabsBtn.querySelector(".tab-more-label");
   // each tab keeps its own scroll position, so switching away and back lands you where you
@@ -3200,7 +3217,7 @@ function renderScheduleFirstDay(){
     if (moreTabsBtn){
       var grouped = GROUPED_TABS.hasOwnProperty(name);
       moreTabsBtn.classList.toggle("active", grouped);
-      var moreLabelText = grouped ? GROUPED_TABS[name] : "Camera, Locations, Floor plan, Sun path, Callsheet";
+      var moreLabelText = grouped ? GROUPED_TABS[name] : "Camera, Locations, Sun path";
       if (moreTabsLabel) moreTabsLabel.textContent = grouped ? GROUPED_TABS[name] : "More";
       moreTabsBtn.title = moreLabelText;
       moreTabsBtn.setAttribute("aria-label", moreLabelText);
@@ -10197,7 +10214,7 @@ function refreshScriptRefBadges(){
   // The number is only written back once the file has actually been produced, so a
   // cancelled or failed export does not burn a version.
   function nextExportName(kind, ext){
-    var base = slugForFile(document.querySelector(".project-name").textContent) || "prepyard";
+    var base = slugForFile(document.querySelector(".project-name").textContent) || "filmprep";
     var key = (kind || "project") + "|" + base.toLowerCase();
     var all = readExportVersions();
     var n = (parseInt(all[key], 10) || 0) + 1;
@@ -10271,7 +10288,7 @@ function refreshScriptRefBadges(){
       syncInputAttrs(lensSetsEl);
       var val = function(id){ var el = document.getElementById(id); return el ? el.value : ""; };
       return {
-        app: "prepyard",
+        app: "filmprep",
         version: 2,
         savedAt: new Date().toISOString(),
         projectName: document.querySelector(".project-name").textContent.trim() || "Untitled project",
@@ -10307,7 +10324,7 @@ function refreshScriptRefBadges(){
     try {
       var payload = buildProjectPayload();
       var json = JSON.stringify(payload);
-      var named = nextExportName("", ".prepyard.json");
+      var named = nextExportName("", ".filmprep.json");
       var filename = named.name;
       if (downloadsAPI && downloadsAPI.save){
         statusMsg.textContent = "Saving project…";
@@ -10376,7 +10393,7 @@ function refreshScriptRefBadges(){
       try {
         var data = JSON.parse(reader.result);
         if (!data || (data.app !== "prepyard" && data.app !== "filmprep" && data.app !== "decoupage") || typeof data.scenesHTML !== "string"){
-          throw new Error("not a Prepyard project file");
+          throw new Error("not a FilmPrep project file");
         }
         pendingProjectData = data;
         // the panel carries the confirm step, so it has to be on screen now
@@ -10388,7 +10405,7 @@ function refreshScriptRefBadges(){
         pendingProjectData = null;
         openProjectPanel.hidden = false;
         openProjectConfirm.hidden = true;
-        openProjectMsg.textContent = "That doesn't look like a valid Prepyard project file.";
+        openProjectMsg.textContent = "That doesn't look like a valid FilmPrep project file.";
       }
     };
     reader.readAsText(file);
@@ -11663,7 +11680,7 @@ function refreshScriptRefBadges(){
       var homeMsg = document.getElementById("homeStatusMsg");
       if (!data || (data.app !== "prepyard" && data.app !== "filmprep" && data.app !== "decoupage") || typeof data.scenesHTML !== "string"){
         if (homeMsg){
-          homeMsg.textContent = "That doesn't look like a valid Prepyard project file.";
+          homeMsg.textContent = "That doesn't look like a valid FilmPrep project file.";
           setTimeout(function(){ homeMsg.textContent = ""; }, 4000);
         }
         input.value = "";
@@ -12320,5 +12337,750 @@ function refreshScriptRefBadges(){
 #schedule td.sched-scene{ color:var(--ink-2); }
 #schedule td.sched-total{ font-family:var(--font-mono); }
 </style>
+
+</body></html>
+<style>
+/* =====================================================================
+   FILMPREP — REDESIGN (mockup rev 08)
+   Black / white / grey, one signal-orange accent. Archivo for display and
+   labels, Instrument Sans for everything else, Courier Prime only on the
+   screenplay page. Hairlines instead of shadows, square corners, no texture.
+   Appended last so it wins the cascade — markup, ids and behaviour untouched.
+   ===================================================================== */
+
+/* ---------- tokens ---------- */
+:root{
+  --bg:#F3F3F1;
+  --paper:#FFFFFF;
+  --surface:#FFFFFF;
+  --surface-2:#EDEDEB;
+  --ink:#101112;
+  --ink-2:#54575C;
+  --ink-3:#8A8D92;
+  --border:#D6D6D3;
+  --border-strong:#101112;
+  --line:#D6D6D3;
+  --hair:#D6D6D3;
+  --mat-minor:var(--bg); --mat-major:var(--bg); --mat-diag:var(--bg);
+
+  --accent:#FF4311;
+  --accent-ink:#FFFFFF;
+
+  --scene:var(--ink); --scene-bg:var(--surface-2); --scene-ink:var(--ink);
+  --camera:#1D6B45; --camera-bg:var(--surface-2); --camera-ink:var(--ink);
+  --licht:#8A6A00;  --licht-bg:var(--surface-2);  --licht-ink:var(--ink);
+  --notes:#4B3FA8;  --notes-bg:var(--surface-2);  --notes-ink:var(--ink);
+
+  --radius:0px;
+  --shadow:none;
+  --font-display:"Archivo", sans-serif;
+  --font-body:"Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:"Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#131315; --paper:#1B1B1E; --surface:#1B1B1E; --surface-2:#232326;
+    --ink:#F2F2F0; --ink-2:#AFB1B5; --ink-3:#717479;
+    --border:#333336; --border-strong:#F2F2F0; --line:#333336; --hair:#333336;
+    --accent:#FF5A2E; --accent-ink:#131315;
+    --camera:#5FC38E; --licht:#D8B344; --notes:#9A91E8;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131315; --paper:#1B1B1E; --surface:#1B1B1E; --surface-2:#232326;
+  --ink:#F2F2F0; --ink-2:#AFB1B5; --ink-3:#717479;
+  --border:#333336; --border-strong:#F2F2F0; --line:#333336; --hair:#333336;
+  --accent:#FF5A2E; --accent-ink:#131315;
+  --camera:#5FC38E; --licht:#D8B344; --notes:#9A91E8;
+}
+
+body{ background-image:none !important; background-color:var(--bg) !important;
+  font-family:var(--font-body); }
+h1,h2,h3,h4{ font-family:var(--font-display); }
+::selection{ background:var(--ink); color:var(--paper); }
+
+/* ---------- app shell: one bordered sheet on a grey ground ---------- */
+.app{ background:var(--paper); border:1px solid var(--border-strong);
+  margin:20px auto 44px !important; max-width:1700px; }
+
+/* ---------- header, two bands ---------- */
+.topbar{ display:flex !important; flex-direction:column !important; align-items:stretch !important;
+  padding:0 !important; margin:-20px -24px 20px !important; gap:0 !important;
+  background:var(--paper) !important; border-bottom:1px solid var(--border-strong) !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important; box-shadow:none !important; }
+.topbar > .tabs, .topbar > .topbar-row1{ grid-column:unset; }
+.topbar-row1{ display:flex; align-items:center; gap:18px; padding:13px 22px;
+  border-bottom:1px solid var(--hair); }
+.brand{ display:flex; align-items:center; gap:14px; }
+.brand h1{ font-family:var(--font-display); font-weight:800; font-size:19px; letter-spacing:-.01em;
+  cursor:pointer; }
+.project-menu{ padding:4px 9px !important; margin-left:2px !important;
+  border:1px solid transparent !important; }
+.project-menu:hover{ border-color:var(--border) !important; }
+.project-name{ font-family:var(--font-body); font-weight:600; font-size:13.5px; color:var(--ink); }
+.pm-caret{ color:var(--ink-3); }
+#statusMsg, #autosaveNote{ font-family:var(--font-display); font-weight:700; font-size:10.5px;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--accent) !important; }
+
+/* the project name, with the accent square in front of it, divided off the wordmark */
+.brand .project-menu{ padding-left:16px !important; margin-left:2px !important;
+  border-left:1px solid var(--border) !important; border-radius:0 !important; gap:9px !important; }
+.brand .project-menu::before{ content:""; width:7px; height:7px; background:var(--accent); flex:0 0 auto; }
+.brand .project-menu:hover{ border-left-color:var(--border) !important; }
+.brand .project-menu:hover .project-name{ color:var(--ink-2); }
+
+/* right side: undo/redo pair, save stamp, home, preferences, Export — nothing else */
+.topbar-actions{ display:flex; align-items:center; gap:10px; margin-left:auto; flex-wrap:wrap; }
+.hist-btns{ display:flex; gap:8px; }
+.icon-btn{ width:36px; height:36px; padding:0 !important; }
+.icon-btn svg{ width:17px; height:17px; }
+#autosaveNote{ margin:0 4px 0 2px; }
+#exportMenuBtn{ font-size:13px; font-weight:600; padding:9px 18px; }
+/* the duplicated project-menu actions live off-screen; the Export menu fires them */
+.topbar-hidden-actions{ position:absolute; width:1px; height:1px; overflow:hidden;
+  clip:rect(0,0,0,0); white-space:nowrap; }
+
+/* ---------- tabs: sentence case, orange underline on the current page ---------- */
+.tabs{ display:flex; gap:28px !important; padding:0 22px !important; margin:0 !important;
+  background:none !important; border-radius:0 !important; }
+.tab{ font-family:var(--font-body) !important; font-weight:500; font-size:14px;
+  letter-spacing:0; color:var(--ink-2) !important; padding:12px 0 !important;
+  border-bottom:2px solid transparent !important; }
+.tab:hover{ color:var(--ink) !important; }
+.tab.active{ color:var(--ink) !important; font-weight:600;
+  border-bottom:2px solid var(--accent) !important; }
+.tab-more{ gap:7px; }
+.tab-more-icon{ opacity:.85; }
+
+/* ---------- buttons ---------- */
+.btn-ghost,.btn-primary,.icon-btn{ border-radius:0 !important; box-shadow:none !important;
+  font-family:var(--font-body); }
+.btn-ghost{ border:1px solid var(--border) !important; background:var(--paper) !important;
+  color:var(--ink) !important; font-weight:500; }
+.btn-ghost:hover{ border-color:var(--ink) !important; background:var(--paper) !important;
+  color:var(--ink) !important; }
+.btn-primary{ background:var(--accent) !important; border:1px solid var(--accent) !important;
+  color:var(--accent-ink) !important; font-weight:600; }
+.btn-primary:hover{ filter:brightness(.93); }
+.icon-btn{ border:1px solid var(--border) !important; color:var(--ink-2) !important; }
+.icon-btn:hover{ background:var(--surface-2) !important; color:var(--ink) !important; }
+.icon-btn:disabled{ opacity:.3; }
+
+/* ---------- shotlist toolbar: a real bar with a title ---------- */
+.shotlist-toolbar{ display:flex !important; align-items:center; justify-content:space-between !important;
+  gap:14px; padding:16px 18px !important; margin:0 0 -1px !important;
+  background:var(--paper); border:1px solid var(--hair); }
+.sl-title{ display:flex; align-items:baseline; gap:14px; }
+.sl-title b{ font-family:var(--font-display); font-weight:700; font-size:20px; color:var(--ink); }
+.sl-title span{ font-size:13.5px; color:var(--ink-3); }
+
+/* ---------- scene group ---------- */
+.scene-group{ background:var(--paper); border:1px solid var(--hair) !important; border-radius:0 !important;
+  box-shadow:none !important; margin-bottom:20px; }
+
+/* the scene divider, as in the mockup: a solid black bar, orange number, white slug */
+.scene-head{ background:var(--ink) !important; border-bottom:none !important;
+  padding:10px 16px !important; gap:12px !important; }
+.scene-title{ gap:12px !important; align-items:center; }
+.scene-badge{ background:none !important; color:var(--accent) !important; padding:0 !important;
+  font-family:var(--font-display) !important; font-weight:800 !important; font-size:12px !important;
+  letter-spacing:.08em !important; text-transform:uppercase; border-radius:0 !important; }
+.scene-name{ color:var(--paper) !important; font-family:var(--font-display) !important;
+  font-weight:700 !important; font-size:13px !important; letter-spacing:.06em !important;
+  text-transform:uppercase; border-bottom-color:transparent !important; }
+.scene-name:hover, .scene-name:focus{ border-bottom-color:rgba(255,255,255,.45) !important; }
+.scene-name:empty::before{ color:rgba(255,255,255,.4) !important; }
+.scene-dd{ background:transparent !important; border:1px solid rgba(255,255,255,.3) !important;
+  color:var(--paper) !important; border-radius:0 !important; font-family:var(--font-display);
+  font-size:10px !important; letter-spacing:.08em; }
+.scene-dd:hover{ border-color:rgba(255,255,255,.7) !important; }
+.scene-dd .dd-btn{ color:rgba(255,255,255,.65) !important; }
+.scene-head .del-scene{ background:transparent !important; border:1px solid rgba(255,255,255,.3) !important;
+  color:rgba(255,255,255,.85) !important; border-radius:0 !important; }
+.scene-head .del-scene:hover{ border-color:var(--accent) !important; color:var(--accent) !important; }
+.scene-head .del-scene.armed{ background:var(--accent) !important; border-color:var(--accent) !important;
+  color:#fff !important; }
+
+/* summary + camera/light/notes: flat grey panels, thin semantic rule, no colour wash */
+.scene-summary-row{ padding:16px 16px 0 !important; }
+.tag-grid{ gap:12px !important; padding:14px 16px !important; border-bottom:1px solid var(--hair) !important; }
+.tag-block{ border-radius:0 !important; padding:11px 13px !important;
+  background:var(--surface-2) !important; }
+.tag-block.tag-summary{ box-shadow:inset 3px 0 0 var(--ink) !important; }
+.tag-block.tag-camera{ box-shadow:inset 3px 0 0 var(--camera) !important; }
+.tag-block.tag-licht{ box-shadow:inset 3px 0 0 var(--licht) !important; }
+.tag-block.tag-notes{ box-shadow:inset 3px 0 0 var(--notes) !important; }
+.tag-chip{ font-family:var(--font-display) !important; font-weight:800; font-size:9.5px;
+  letter-spacing:.1em; }
+.tag-camera .tag-chip{ color:var(--camera) !important; }
+.tag-licht .tag-chip{ color:var(--licht) !important; }
+.tag-notes .tag-chip{ color:var(--notes) !important; }
+.tag-summary .tag-chip{ color:var(--ink-2) !important; }
+.tag-add{ font-family:var(--font-body); color:var(--ink-2) !important; }
+.tag-add:hover{ color:var(--ink) !important; }
+
+/* ---------- tables: hairline grid, sentence-case headers, zebra rows ---------- */
+.shot-table thead th{ background:var(--surface-2) !important; color:var(--ink-2) !important;
+  font-family:var(--font-display) !important; font-weight:700 !important; font-size:10.5px !important;
+  letter-spacing:.03em !important; text-transform:none !important;
+  padding:10px 12px !important; border-bottom:1px solid var(--border-strong) !important;
+  border-right:1px solid var(--border) !important; }
+.shot-table thead th:last-child{ border-right:none !important; }
+.shot-table td{ padding:10px 12px !important; border-bottom:1px solid var(--hair) !important;
+  border-right:1px solid var(--hair) !important; font-size:13px; }
+.shot-table td:last-child{ border-right:none !important; }
+.shot-table tbody tr:nth-child(even){ background:color-mix(in srgb, var(--ink) 2.5%, transparent); }
+.shot-table tr:hover{ background:color-mix(in srgb, var(--accent) 6%, transparent) !important; }
+td[data-col="START TIMECODE"],td[data-col="DURATION"],td[data-col="SCENE"],td[data-col="SHOT"],td[data-col="LENS"]{
+  font-family:var(--font-body) !important; font-size:12.5px !important; }
+td[data-col="SHOT"]{ font-weight:700 !important; color:var(--ink) !important; }
+td[data-col="SIZE"] .cell-text{ font-family:var(--font-body) !important; font-weight:600; }
+td.dd-cell:hover{ box-shadow:inset 0 0 0 1px var(--ink) !important; }
+.dd-btn:hover{ color:var(--ink) !important; }
+td.actions-col{ background:var(--paper) !important; border-left:1px solid var(--hair) !important; }
+.del-row:hover{ background:var(--surface-2) !important; color:var(--ink) !important; }
+.del-row.armed{ background:var(--accent) !important; color:#fff !important; }
+.grip:hover{ color:var(--ink); }
+
+.add-shot{ background:var(--paper) !important; color:var(--ink) !important;
+  border-top:1px solid var(--hair) !important; font-family:var(--font-body); font-weight:600; }
+.add-shot:hover{ background:var(--surface-2) !important; }
+.add-scene{ border:1px dashed var(--border-strong) !important; border-radius:0 !important;
+  background:transparent !important; color:var(--ink) !important;
+  font-family:var(--font-body) !important; font-weight:600; }
+.add-scene:hover{ background:var(--surface-2) !important; }
+.del-scene{ border-radius:0 !important; border:1px solid var(--border) !important;
+  background:var(--paper) !important; color:var(--ink) !important; font-family:var(--font-body); }
+
+/* menus / popovers ---------- */
+.dd-menu,.columns-menu,.shot-detail-popup,.prefs-box,.confirm-box,.compare-box{
+  border-radius:0 !important; box-shadow:0 12px 32px -14px rgba(0,0,0,.4) !important;
+  border:1px solid var(--border-strong) !important; background:var(--paper) !important; }
+.dd-item{ border-radius:0 !important; font-size:12.5px; }
+.dd-item:hover{ background:var(--surface-2) !important; }
+.dd-item-current{ font-weight:700; }
+.dd-item-current::after{ color:var(--accent) !important; }
+.dd-swatch{ border-radius:0 !important; }
+.columns-menu-title,.prefs-head,.sdp-title{ font-family:var(--font-display) !important; }
+
+/* ---------- breakdown ---------- */
+.bcard{ border:1px solid var(--hair) !important; border-radius:0 !important; box-shadow:none !important; }
+.bcard-left{ background:var(--surface-2); border-right:1px solid var(--hair) !important; }
+.bcard-scene{ background:var(--ink) !important; color:var(--paper) !important; border-radius:0 !important;
+  font-family:var(--font-display) !important; letter-spacing:.07em; }
+.bcard-slug{ font-family:var(--font-body) !important; color:var(--ink-2) !important; }
+.bcard-head h3{ font-family:var(--font-display) !important; font-weight:800; font-size:19px; }
+.btag b{ background:none !important; padding:0 !important; border-radius:0 !important;
+  font-family:var(--font-display) !important; font-size:9.5px; letter-spacing:.1em; }
+.btag-camera b{ color:var(--camera) !important; }
+.btag-licht b{ color:var(--licht) !important; }
+.btag-notes b{ color:var(--notes) !important; }
+.bcard-shots{ border-top:1px solid var(--hair) !important; }
+.bshot-num{ font-family:var(--font-display) !important; color:var(--accent) !important; font-weight:800; }
+.bshot-tag{ font-family:var(--font-body) !important; background:none !important;
+  border:1px solid var(--border-strong) !important; border-radius:0 !important;
+  font-size:10.5px !important; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
+  padding:3px 8px !important; }
+.bshot-action{ font-size:14px; }
+.media-empty-tile{ border:1px dashed var(--border) !important; border-radius:0 !important;
+  color:var(--ink-2) !important; font-family:var(--font-body); font-weight:500; font-size:12px; }
+.media-empty-tile:hover{ border-color:var(--ink) !important; color:var(--ink) !important; }
+.media-thumb,.media-thumb img{ border-radius:0 !important; }
+.media-label{ font-family:var(--font-display) !important; font-size:9.5px; letter-spacing:.1em; }
+.media-add{ border-radius:0 !important; border:1px solid var(--border) !important;
+  font-family:var(--font-body); }
+.media-add:hover{ border-color:var(--ink) !important; color:var(--ink) !important; }
+.bcard-empty,.locations-empty{ border:1px dashed var(--border) !important; border-radius:0 !important; }
+
+/* ---------- schedule ---------- */
+.sched-toolbar{ padding:14px 16px; background:var(--paper); border:1px solid var(--hair);
+  margin-bottom:-1px; display:flex; align-items:center; gap:14px; }
+#schedule > div{ border-radius:0 !important; border:1px solid var(--hair) !important;
+  background:var(--paper) !important; }
+#schedule table thead th{ background:var(--surface-2); font-family:var(--font-display) !important;
+  font-size:10.5px !important; letter-spacing:.03em !important; text-transform:none !important;
+  color:var(--ink-2); border-bottom:1px solid var(--border-strong) !important; }
+#schedule table td{ border-bottom:1px solid var(--hair); }
+#schedule td.sched-time,#schedule td.sched-total{ font-family:var(--font-body) !important; }
+#schedule td.sched-total{ font-weight:700; }
+.sched-scene-row{ background:var(--surface-2); }
+.break-row td{ background:var(--surface-2) !important; color:var(--ink-2) !important;
+  font-family:var(--font-display); font-size:11px; letter-spacing:.06em; }
+.mins-stepper{ display:inline-flex; align-items:center; border:1px solid var(--border);
+  border-radius:0 !important; overflow:hidden; }
+.mstep-btn{ border:none !important; background:var(--paper) !important; color:var(--ink-2) !important;
+  width:22px; cursor:pointer; }
+.mstep-btn:hover{ background:var(--surface-2) !important; color:var(--ink) !important; }
+.mins-input{ border:none !important; border-left:1px solid var(--border) !important;
+  border-right:1px solid var(--border) !important; text-align:center; width:44px;
+  font-family:var(--font-body) !important; background:var(--paper); color:var(--ink); }
+.day-add-btn{ border:1px solid var(--border) !important; border-radius:0 !important;
+  background:var(--paper) !important; color:var(--ink) !important; font-family:var(--font-body);
+  font-size:12px; padding:6px 10px; cursor:pointer; }
+.day-add-btn:hover{ border-color:var(--ink) !important; }
+.day-total,.day-wrap{ font-family:var(--font-display) !important; font-weight:800 !important; }
+.del-break{ color:var(--ink-3); }
+.del-break:hover{ color:var(--accent); }
+
+/* ---------- script page ---------- */
+.script-toolbar,.script-draw-toolbar{ background:var(--paper) !important;
+  border:1px solid var(--hair) !important; border-radius:0 !important; }
+.script-toolbar .btn-ghost{ font-size:12px; }
+.stb-btn-label{ font-family:var(--font-body); }
+.script-page,.script-body{ background:#FFFFFF !important; }
+.script-toggle{ font-family:var(--font-body); }
+.sdt-tool{ border-radius:0 !important; }
+.sdt-tool.active{ background:var(--ink) !important; border-color:var(--ink) !important; }
+.script-info-btn{ border-color:var(--border) !important; }
+.script-hint{ font-family:var(--font-body); }
+
+/* ---------- locations ---------- */
+.location-entry{ border:1px solid var(--hair) !important; border-radius:0 !important;
+  box-shadow:none !important; background:var(--paper) !important; }
+.loc-name{ font-family:var(--font-display) !important; font-weight:700; }
+.loc-coords{ border-radius:0 !important; border:1px solid var(--border) !important;
+  font-family:var(--font-body) !important; background:var(--paper) !important; }
+
+/* ---------- floor plan ---------- */
+.fp-bar{ background:var(--paper); border:1px solid var(--hair); padding:12px 14px; margin-bottom:-1px;
+  border-radius:0 !important; }
+.fp-field label{ font-family:var(--font-display) !important; font-size:10px !important;
+  letter-spacing:.08em; color:var(--ink-2); }
+.fp-field select,.fp-field input[type="text"]{ border-radius:0 !important;
+  border:1px solid var(--border) !important; background:var(--paper) !important;
+  font-family:var(--font-body) !important; color:var(--ink); }
+.fp-workspace{ border:1px solid var(--hair); background:var(--paper); }
+.fp-toolbar{ border-right:1px solid var(--hair) !important; background:var(--paper) !important; }
+.fp-tool{ border-radius:0 !important; border:1px solid transparent !important;
+  color:var(--ink-2) !important; background:transparent !important; }
+.fp-tool:hover{ background:var(--surface-2) !important; color:var(--ink) !important; }
+.fp-tool.active{ background:var(--ink) !important; color:var(--paper) !important;
+  border-color:var(--ink) !important; }
+.fp-tlabel{ font-family:var(--font-display) !important; font-size:9px !important;
+  letter-spacing:.1em; color:var(--ink-3); }
+.fp-stage{ background:var(--paper); }
+.fp-shots,.fp-shot-table{ font-family:var(--font-body) !important; }
+.fp-shot-table th{ font-family:var(--font-display) !important; font-size:10px !important;
+  letter-spacing:.04em; text-transform:none !important; color:var(--ink-2);
+  border-bottom:1px solid var(--border-strong); }
+.fp-shot-table td{ border-bottom:1px solid var(--hair); }
+.fp-cast-box,.camera-box,.cam-box,.lens-box{ background:var(--paper) !important;
+  border:1px solid var(--hair) !important; border-radius:0 !important; box-shadow:none !important; }
+.camera-h{ font-family:var(--font-display) !important; font-size:10px !important;
+  letter-spacing:.1em !important; color:var(--ink-2) !important; background:none !important;
+  padding:0 !important; }
+
+/* ---------- camera & lenses: equal-width inputs ---------- */
+.camera-field label,.cam-brand,.lens-brand{ font-family:var(--font-display) !important;
+  font-size:10px !important; letter-spacing:.06em; color:var(--ink-2) !important; }
+.camera-field input,.camera-field select,.cam-name,.lens-name,.lens-series,.lens-note,
+.cast-name,.note-input{ border-radius:0 !important; border:1px solid var(--border) !important;
+  background:var(--paper) !important; font-family:var(--font-body) !important; color:var(--ink); }
+.lens-entry,.cast-entry,.lens-preset{ border-radius:0 !important; }
+.lens-preset{ border:1px solid var(--border) !important; }
+
+/* ---------- callsheet ---------- */
+.cs-bar{ background:var(--paper); border:1px solid var(--hair); padding:13px 16px;
+  margin-bottom:-1px; border-radius:0 !important; }
+.cs-bar-label{ font-family:var(--font-display) !important; font-size:10px !important;
+  letter-spacing:.08em; color:var(--ink-2); }
+.cs-panel{ background:var(--paper) !important; border:1px solid var(--hair) !important;
+  border-radius:0 !important; box-shadow:none !important; }
+.cs-panel-title{ font-family:var(--font-display) !important; font-weight:700 !important;
+  font-size:13px !important; }
+.cs-panel-note{ font-family:var(--font-body); color:var(--ink-2); font-size:11.5px; }
+.cs-field label{ font-family:var(--font-display) !important; font-size:10px !important;
+  letter-spacing:.06em; color:var(--ink-2) !important; }
+.cs-field input,.cs-field select,.cs-field textarea,.cs-person input,.cs-cast input,
+.cs-transport input,.cs-dept-add select{ border-radius:0 !important;
+  border:1px solid var(--border) !important; background:var(--paper) !important;
+  font-family:var(--font-body) !important; color:var(--ink); }
+.cs-sheet,.cs-sheet-wrap{ background:#FFFFFF !important; }
+.cs-sheet{ border:1px solid var(--border-strong) !important; border-radius:0 !important;
+  box-shadow:none !important; }
+.cs-eyebrow{ font-family:var(--font-display) !important; color:var(--accent) !important;
+  font-size:10px !important; letter-spacing:.1em; text-transform:uppercase; }
+.cs-title{ font-family:var(--font-display) !important; font-weight:800 !important; }
+.cs-daybox{ border:1px solid var(--border-strong) !important; border-radius:0 !important; }
+.cs-block-title{ font-family:var(--font-display) !important; font-size:10.5px !important;
+  letter-spacing:.08em; color:var(--ink-2) !important; }
+.cs-table th{ font-family:var(--font-display) !important; font-size:10px !important;
+  letter-spacing:.04em; text-transform:none !important; color:var(--ink-2) !important;
+  border-bottom:1px solid var(--border-strong) !important; }
+.cs-table td{ border-bottom:1px solid var(--hair) !important; }
+.cs-break-row td{ background:var(--ink) !important; color:var(--paper) !important;
+  font-family:var(--font-display); font-size:10.5px; letter-spacing:.06em; }
+.cs-crew-table thead th{ background:var(--surface-2) !important; color:var(--ink) !important;
+  font-family:var(--font-display) !important; }
+.cs-mono{ font-family:var(--font-body) !important; }
+.cs-stat b{ font-family:var(--font-display) !important; font-size:9.5px !important;
+  letter-spacing:.08em; color:var(--ink-2) !important; }
+.cs-stat span{ font-family:var(--font-display) !important; font-weight:800 !important; }
+.cs-key-toggle{ color:var(--ink-2); }
+
+/* ---------- sun ---------- */
+.sun-controls,.sun-output{ background:var(--paper) !important; border:1px solid var(--hair) !important;
+  border-radius:0 !important; box-shadow:none !important; }
+.sun-field label{ font-family:var(--font-display) !important; font-size:10px !important;
+  letter-spacing:.06em; }
+.sun-field input,.sun-field select,.sun-save-row select{ border-radius:0 !important;
+  border:1px solid var(--border) !important; font-family:var(--font-body) !important;
+  background:var(--paper) !important; color:var(--ink); }
+.sun-stat{ background:var(--surface-2) !important; border-radius:0 !important; }
+.sun-stat b{ font-family:var(--font-display) !important; }
+.sun-stat span{ font-family:var(--font-display) !important; font-weight:800 !important; }
+
+/* ---------- home screen ---------- */
+.home-view{ background:var(--bg); }
+.home-topbar{ background:var(--paper); border-bottom:1px solid var(--border-strong);
+  padding:16px 24px; }
+.home-topbar .brand h1{ font-size:20px; }
+.home-main{ max-width:1180px; margin:0 auto; padding:34px 24px 60px; }
+.home-main h2{ font-family:var(--font-display) !important; font-weight:700; font-size:13px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-2); margin-bottom:18px; }
+.home-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px;
+  background:transparent; border:none; }
+.home-card{ background:var(--paper) !important; border:1px solid var(--border) !important;
+  border-radius:0 !important; box-shadow:none !important; padding:18px !important; min-height:122px; }
+.home-card:hover{ background:var(--surface-2) !important; }
+.home-card-name{ font-family:var(--font-display) !important; font-weight:700 !important;
+  font-size:14.5px !important; }
+.home-card-meta{ font-family:var(--font-body); color:var(--ink-3); font-size:11.5px; }
+.home-card-new{ border:1px dashed var(--border) !important; background:var(--paper) !important;
+  color:var(--ink-2) !important; }
+.home-card-new:hover{ border-color:var(--ink) !important; color:var(--ink) !important; }
+.home-card-new-icon{ font-size:22px; }
+.home-card-new-label{ font-family:var(--font-body); font-weight:600; }
+.home-empty-hint{ font-family:var(--font-body); color:var(--ink-3); font-size:12.5px; }
+
+/* ---------- panels, modals, misc ---------- */
+#importPanel,#openProjectPanel,#autosaveBar{ background:var(--paper) !important;
+  border:1px solid var(--hair) !important; border-radius:0 !important; box-shadow:none !important; }
+#importArea,.compare-textarea{ border-radius:0 !important; border:1px solid var(--border) !important;
+  background:var(--paper) !important; font-family:var(--font-body) !important; }
+.confirm-box h3,.prefs-head{ font-family:var(--font-display) !important; }
+.confirm-danger{ border-color:var(--accent) !important; color:var(--accent) !important; }
+.confirm-danger:hover{ background:var(--accent) !important; color:#fff !important; }
+.compare-summary,.compare-too-big{ background:var(--surface-2) !important; }
+.prefs-chips,.prefs-chip{ border-radius:0 !important; }
+.lightbox img{ border-radius:0 !important; }
+
+/* ---------- script page: scene rail beside the page, as in the mockup ---------- */
+#scriptView.active{ display:grid; grid-template-columns:244px minmax(0,1fr);
+  gap:18px; align-items:start; }
+#scriptView > .script-rail{ grid-column:1; grid-row:1 / span 2; }
+#scriptView > .script-toolbars{ grid-column:2; grid-row:1; }
+#scriptView > .script-stage{ grid-column:2; grid-row:2; }
+@media (max-width:1100px){
+  #scriptView.active{ grid-template-columns:minmax(0,1fr); }
+  #scriptView > .script-rail{ grid-column:1; grid-row:auto; }
+  #scriptView > .script-toolbars,#scriptView > .script-stage{ grid-column:1; grid-row:auto; }
+}
+
+.script-rail{ background:var(--paper); border:1px solid var(--hair);
+  position:sticky; top:calc(var(--topbar-h, 62px) + 14px); max-height:calc(100vh - var(--topbar-h,62px) - 40px);
+  display:flex; flex-direction:column; }
+.sr-head{ font-family:var(--font-body); font-size:11.5px; font-weight:600; color:var(--ink-2);
+  padding:14px 16px 11px; border-bottom:1px solid var(--hair); flex:0 0 auto; }
+.sr-list{ overflow-y:auto; flex:1 1 auto; }
+.sr-item{ display:grid; grid-template-columns:28px minmax(0,1fr); gap:10px;
+  padding:11px 16px; border-bottom:1px solid var(--hair); cursor:pointer;
+  box-shadow:inset 3px 0 0 transparent; }
+.sr-item:hover{ background:var(--surface-2); }
+.sr-item.active{ background:var(--surface-2); box-shadow:inset 3px 0 0 var(--ink); }
+.sr-n{ font-size:12.5px; color:var(--ink-3); padding-top:1px; }
+.sr-item.active .sr-n{ color:var(--ink); font-weight:700; }
+.sr-slug{ display:block; font-family:var(--font-display); font-weight:700; font-size:12px;
+  letter-spacing:.02em; text-transform:uppercase; color:var(--ink); overflow:hidden;
+  text-overflow:ellipsis; white-space:nowrap; }
+.sr-meta{ display:block; font-size:11px; color:var(--ink-3); margin-top:3px; }
+.sr-dots{ display:flex; gap:4px; margin-top:6px; }
+.sr-dot{ width:5px; height:5px; flex:0 0 auto; }
+.sr-dot.int{ background:#1858FF; } .sr-dot.ext{ background:#1DAA5B; }
+.sr-dot.night{ background:#8A5CF6; } .sr-dot.day{ background:#D6A400; }
+.sr-empty{ font-size:12px; color:var(--ink-3); line-height:1.5; padding:14px 16px; margin:0; }
+.sr-empty b{ color:var(--ink-2); }
+</style>
+
+<script>
+/* Export menu + Preferences button.
+   Both drive the buttons the project menu already drives, so there is exactly one
+   implementation of each action — these are just the mockup's header affordances
+   pointed at it. */
+(function(){
+  function fire(id){ var b = document.getElementById(id); if (b) b.click(); }
+
+  var EXPORTS = [
+    ["Export shotlist PDF",  "exportShotlistPdfBtn"],
+    ["Export breakdown PDF", "exportBreakdownPdfBtn"],
+    ["Export schedule PDF",  "exportSchedulePdfBtn"],
+    ["Save project file",    "saveProjectBtn"],
+    ["Open project file",    "openProjectBtn"],
+    ["Paste shotlist",       "importToggle"]
+  ];
+
+  var openMenu = null;
+  function closeMenu(){ if (openMenu){ openMenu.remove(); openMenu = null; } }
+  document.addEventListener("click", function(e){
+    if (openMenu && !openMenu.contains(e.target) && e.target.id !== "exportMenuBtn") closeMenu();
+  });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeMenu(); });
+
+  var btn = document.getElementById("exportMenuBtn");
+  if (btn) btn.addEventListener("click", function(e){
+    e.stopPropagation();
+    if (openMenu){ closeMenu(); return; }
+    var rect = btn.getBoundingClientRect();
+    var menu = document.createElement("ul");
+    menu.className = "dd-menu";
+    menu.style.minWidth = "200px";
+    menu.style.top = (rect.bottom + 6) + "px";
+    EXPORTS.forEach(function(row, i){
+      var li = document.createElement("li");
+      li.className = "dd-item" + (i === 3 ? " sep" : "");
+      li.textContent = row[0];
+      li.addEventListener("click", function(){ closeMenu(); fire(row[1]); });
+      menu.appendChild(li);
+    });
+    document.body.appendChild(menu);
+    menu.style.left = Math.max(8, Math.min(rect.right - menu.offsetWidth, window.innerWidth - menu.offsetWidth - 8)) + "px";
+    openMenu = menu;
+  });
+
+  /* Preferences already lives in the project menu — open it and take that route, so
+     there is no second copy of the preferences dialog logic to drift out of sync. */
+  var prefs = document.getElementById("prefsBtn");
+  if (prefs) prefs.addEventListener("click", function(e){
+    e.stopPropagation();
+    closeMenu();
+    var pm = document.querySelector(".project-menu");
+    if (!pm) return;
+    pm.click();
+    var items = document.querySelectorAll(".dd-menu .dd-item");
+    for (var i = 0; i < items.length; i++){
+      if (/Preferences/.test(items[i].textContent)){ items[i].click(); return; }
+    }
+  });
+})();
+</script>
+
+<style>
+/* =====================================================================
+   SCALE & RHYTHM — matching the mockup's proportions, not just its palette.
+   The system was right but rendered at about three-quarter size with half
+   the breathing room; this sets the real measurements.
+   ===================================================================== */
+
+.app{ padding:26px 28px 60px !important; }
+.topbar{ margin:-26px -28px 24px !important; }
+
+/* --- header band --- */
+.topbar-row1{ padding:20px 28px !important; }
+.brand{ gap:0 !important; }
+.brand h1{ font-size:21px !important; letter-spacing:-.015em; }
+.brand .project-menu{ padding:5px 10px 5px 18px !important; margin-left:16px !important;
+  gap:11px !important; }
+.brand .project-menu::before{ width:9px !important; height:9px !important; }
+.project-name{ font-size:15px !important; font-weight:600 !important; color:var(--ink) !important; }
+.pm-caret{ font-size:11px; }
+
+.topbar-actions{ gap:12px !important; }
+.hist-btns{ gap:9px !important; }
+.icon-btn{ width:40px !important; height:40px !important; }
+.icon-btn svg{ width:18px !important; height:18px !important; }
+/* the save stamp is a quiet grey note, not a shouted orange label */
+#autosaveNote, #statusMsg{ font-family:var(--font-body) !important; font-weight:400 !important;
+  font-size:13px !important; letter-spacing:0 !important; text-transform:none !important;
+  color:var(--ink-3) !important; }
+#exportMenuBtn{ font-size:14.5px !important; padding:11px 25px !important; }
+
+/* --- tab band: bigger type, real spacing, thicker rule --- */
+.tabs{ gap:42px !important; padding:0 28px !important; }
+.tab{ font-size:15px !important; padding:16px 0 !important;
+  border-bottom-width:3px !important; }
+.tab.active{ border-bottom:3px solid var(--accent) !important; }
+/* "More" reads as a word with a caret, the way the mockup has it */
+.tab-more .tab-more-icon{ display:none !important; }
+.tab-more .tab-more-label{ position:static !important; width:auto !important; height:auto !important;
+  overflow:visible !important; clip:auto !important; }
+.tab-more::after{ content:"▾"; font-size:10px; margin-left:7px; opacity:.8; }
+
+/* --- page-level panels --- */
+.shotlist-toolbar{ padding:22px 24px !important; }
+.shotlist-toolbar::before{ font-size:20px !important; }
+#columnsMenuBtn{ font-size:13.5px; padding:10px 15px; }
+
+/* --- shotlist table --- */
+.shot-table thead th{ font-size:12px !important; padding:14px 14px !important;
+  letter-spacing:.01em !important; }
+.shot-table td{ font-size:13.5px !important; padding:13px 14px !important; }
+
+/* --- scene bar --- */
+.scene-head{ padding:13px 18px !important; }
+.scene-badge{ font-size:13px !important; letter-spacing:.09em !important; }
+.scene-name{ font-size:13.5px !important; }
+.scene-dd{ font-size:11px !important; padding:5px 4px 5px 9px !important; }
+
+/* --- tag panels --- */
+.tag-grid{ gap:14px !important; padding:16px 18px !important; }
+.tag-block{ padding:13px 15px !important; }
+.tag-chip{ font-size:10.5px !important; }
+.tag-text{ font-size:13px !important; }
+.scene-summary-row{ padding:18px 18px 0 !important; }
+.scene-summary{ font-size:14px !important; }
+
+/* --- script scene rail --- */
+.sr-head{ font-size:13px !important; padding:16px 18px 13px !important; }
+.sr-item{ padding:13px 18px !important; grid-template-columns:30px minmax(0,1fr) !important; }
+.sr-n{ font-size:13.5px !important; }
+.sr-slug{ font-size:13.5px !important; }
+.sr-meta{ font-size:12px !important; margin-top:4px !important; }
+.sr-dot{ width:6px !important; height:6px !important; }
+#scriptView.active{ gap:22px !important; grid-template-columns:268px minmax(0,1fr) !important; }
+
+/* --- breakdown --- */
+.bcard-head h3{ font-size:21px !important; }
+.bshot-action{ font-size:14.5px !important; }
+.bshot-num{ font-size:18px !important; }
+
+/* --- schedule --- */
+#schedule table thead th{ font-size:12px !important; padding:13px 10px !important; }
+#schedule table td{ padding:12px 10px !important; font-size:13.5px; }
+
+/* --- callsheet form --- */
+.cs-panel-title{ font-size:14px !important; }
+.cs-field label{ font-size:10.5px !important; }
+.cs-bar{ padding:16px 18px !important; }
+
+/* --- home --- */
+.home-topbar{ padding:20px 28px !important; }
+.home-main h2{ font-size:13px !important; }
+.home-card{ padding:20px !important; min-height:132px !important; }
+.home-card-name{ font-size:15.5px !important; }
+</style>
+
+<script>
+/* ---------- script page scene rail ----------
+   Built from the scenes the Shotlist already holds — no second copy of the data.
+   Clicking a scene jumps the script to its heading when that heading can be found
+   in the text, and always marks which scene you are working on. */
+(function(){
+  var list = document.getElementById("srList");
+  var countEl = document.getElementById("srCount");
+  var emptyEl = document.getElementById("srEmpty");
+  var scenesEl = document.getElementById("scenes");
+  if (!list || !scenesEl) return;
+
+  var activeNum = null;
+
+  function sceneRows(){
+    return Array.prototype.slice.call(scenesEl.querySelectorAll(".scene-group"));
+  }
+  function textOf(el){ return el ? el.textContent.trim() : ""; }
+
+  function build(){
+    var groups = sceneRows();
+    list.innerHTML = "";
+    if (!groups.length){
+      emptyEl.hidden = false;
+      countEl.textContent = "Scenes";
+      return;
+    }
+    emptyEl.hidden = true;
+    countEl.textContent = "Scenes, " + groups.length;
+
+    groups.forEach(function(g){
+      var num  = textOf(g.querySelector(".scene-badge .num")) || "?";
+      var name = textOf(g.querySelector(".scene-name"));
+      var ie   = textOf(g.querySelector('.scene-dd[data-kind="intext"] .cell-text'));
+      var dn   = textOf(g.querySelector('.scene-dd[data-kind="daynight"] .cell-text'));
+      var shots = g.querySelectorAll("tbody tr").length;
+
+      var meta = [];
+      if (ie || dn) meta.push([ie, dn].filter(Boolean).join(" · "));
+      meta.push(shots + (shots === 1 ? " shot" : " shots"));
+
+      var item = document.createElement("div");
+      item.className = "sr-item" + (String(num) === String(activeNum) ? " active" : "");
+      item.dataset.num = num;
+
+      var dots = "";
+      if (/INT/i.test(ie)) dots += '<span class="sr-dot int"></span>';
+      if (/EXT/i.test(ie)) dots += '<span class="sr-dot ext"></span>';
+      if (/NIGHT|DUSK|DAWN/i.test(dn)) dots += '<span class="sr-dot night"></span>';
+      else if (/DAY|SUNRISE|SUNSET/i.test(dn)) dots += '<span class="sr-dot day"></span>';
+
+      item.innerHTML =
+        '<div class="sr-n"></div>' +
+        '<div><span class="sr-slug"></span><span class="sr-meta"></span>' +
+          (dots ? '<span class="sr-dots">' + dots + "</span>" : "") +
+        "</div>";
+      item.querySelector(".sr-n").textContent = num;
+      item.querySelector(".sr-slug").textContent = name || "Untitled scene";
+      item.querySelector(".sr-meta").textContent = meta.join(", ");
+
+      item.addEventListener("click", function(){
+        activeNum = num;
+        Array.prototype.forEach.call(list.children, function(c){
+          c.classList.toggle("active", c === item);
+        });
+        jumpToScene(num, name);
+      });
+      list.appendChild(item);
+    });
+  }
+
+  /* find the scene's heading in the script and scroll it into view */
+  function jumpToScene(num, name){
+    var body = document.getElementById("scriptArea");
+    if (!body) return;
+    var needle = (name || "").trim().toUpperCase();
+    var target = null;
+    if (needle){
+      var blocks = body.querySelectorAll("p, div, span");
+      for (var i = 0; i < blocks.length; i++){
+        var t = (blocks[i].textContent || "").trim().toUpperCase();
+        if (!t || t.length > 120) continue;
+        if (/^(INT|EXT|I\/E)[\.\s]/.test(t) && t.indexOf(needle) !== -1){ target = blocks[i]; break; }
+      }
+    }
+    if (target && target.scrollIntoView) target.scrollIntoView({ block:"center", behavior:"smooth" });
+  }
+
+  var t = null;
+  function schedule(){ clearTimeout(t); t = setTimeout(build, 120); }
+  new MutationObserver(schedule).observe(scenesEl, { childList:true, subtree:true, characterData:true });
+  document.querySelectorAll('.tab[data-tab="script"]').forEach(function(b){
+    b.addEventListener("click", schedule);
+  });
+  build();
+})();
+</script>
+
+<script>
+/* "Shot list — 41 shots, 3 scenes", counted off the real table rows. */
+(function(){
+  var bar = document.querySelector(".shotlist-toolbar");
+  var scenesEl = document.getElementById("scenes");
+  if (!bar || !scenesEl) return;
+
+  var title = document.createElement("div");
+  title.className = "sl-title";
+  title.innerHTML = "<b>Shot list</b><span></span>";
+  bar.insertBefore(title, bar.firstChild);
+  var countEl = title.querySelector("span");
+
+  function plural(n, word){ return n + " " + word + (n === 1 ? "" : "s"); }
+  function update(){
+    var scenes = scenesEl.querySelectorAll(".scene-group").length;
+    var shots  = scenesEl.querySelectorAll(".shot-table tbody tr").length;
+    countEl.textContent = scenes ? plural(shots, "shot") + ", " + plural(scenes, "scene") : "No scenes yet";
+  }
+  var t = null;
+  new MutationObserver(function(){ clearTimeout(t); t = setTimeout(update, 120); })
+    .observe(scenesEl, { childList:true, subtree:true });
+  update();
+})();
+</script>
 
 </body></html>
