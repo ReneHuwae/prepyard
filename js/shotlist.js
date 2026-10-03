@@ -100,7 +100,9 @@
       '<span class="sb-spacer"></span>' +
       '<button type="button" class="sb-btn" data-act="add-shot">+ Shot</button>' +
       '<button type="button" class="sb-btn icon" data-act="scene-menu" aria-label="Scene ' + esc(scene.num) + ' options">⋯</button>' +
-    '</div></td></tr>';
+    '</div>' +
+    '<input class="sb-in sum" data-sf="summary" value="' + esc(scene.summary) + '" placeholder="One-line summary…" aria-label="Summary, scene ' + esc(scene.num) + '" autocomplete="off">' +
+    '</td></tr>';
   }
   function tableHTML(p){
     var cols = columns();

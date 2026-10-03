@@ -285,7 +285,15 @@
     var rows = [];
     p.scenes.forEach(function(sc, si){
       var labels = FP.shotNumbers(sc);
-      rows.push({ band: function(){ if (si) d.y += 12; d.ensure(70); sceneBand(d, sc); } });
+      rows.push({ band: function(){
+        if (si) d.y += 12;
+        d.ensure(80);
+        sceneBand(d, sc);
+        if (sc.summary.trim()){
+          d.wrap(sc.summary, 8.4, d.W - 16).forEach(function(l){ d.y += 12; d.text(d.M + 8, d.y, l, { size: 8.4, color: C.soft }); });
+          d.y += 6;
+        }
+      } });
       sc.shots.forEach(function(sh, i){
         var r = { shot: labels[i].label, thumb: sh.storyboard[0] && sh.storyboard[0].src };
         FP.COLUMNS.forEach(function(c){ if (!c.derived) r[c.key] = c.key === "lens" ? lensLabel(sh.lens) : sh[c.key]; });
@@ -474,7 +482,7 @@
       d.y += h + 4;
     }
     var chain = Promise.resolve();
-    var keys = cs.crew.filter(function(c){ return c.key && (c.name || c.role); });
+    var keys = cs.crew.filter(function(c){ return c.key && String(c.name || "").trim(); });
     if (keys.length){
       chain = chain.then(function(){ section("Key contacts");
         return table(d, [{ key: "role", label: "Role", w: 26, bold: true }, { key: "name", label: "Name", w: 26 }, { key: "phone", label: "Phone", w: 20 }, { key: "email", label: "Email", w: 28 }], keys, { size: 8.6 }); });
@@ -507,11 +515,11 @@
         cast.map(function(c, i){ return Object.assign({ i: String(i + 1) }, c); }), { size: 8.4 });
     });
     chain = chain.then(function(){
-      var crew = cs.crew.filter(function(c){ return c.name || c.role; });
+      var crew = cs.crew.filter(function(c){ return String(c.name || "").trim(); });
       section("Crew");
       if (!crew.length){ d.y += 12; d.text(d.M, d.y, "No crew yet.", { size: 9, color: C.faint }); return; }
       var depts = (FP.CREW_DEPTS || []).slice(), byDept = {};
-      crew.forEach(function(c){ var k = c.dept || "Other"; (byDept[k] = byDept[k] || []).push(c); if (depts.indexOf(k) === -1) depts.push(k); });
+      crew.forEach(function(c){ var k = FP.crewDept(c); (byDept[k] = byDept[k] || []).push(c); if (depts.indexOf(k) === -1) depts.push(k); });
       var rows = [];
       depts.filter(function(k){ return byDept[k]; }).forEach(function(k){
         rows.push({ role: k.toUpperCase(), fill: C.band, bold: true, muted: false });
@@ -540,7 +548,7 @@
       if (sun){
         d.y += 18;
         d.ensure(14);
-        d.text(d.M, d.y, "Sun times for " + (data.loc.name || "the location") + " on this date, at the UTC offset set on the Sun path page.", { size: 7, color: C.faint });
+        d.text(d.M, d.y, "Sun times for " + (data.loc.name || "the location") + " on this date, from its coordinates.", { size: 7, color: C.faint });
       }
     });
   }

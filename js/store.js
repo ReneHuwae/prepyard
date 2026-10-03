@@ -66,7 +66,7 @@
   FP.blankProject = function(name){
     return {
       app: "filmprep", version: 3, name: name || "Untitled project", savedAt: "",
-      scenes: [], locations: [],
+      scenes: [], locations: [],   // locations: [{ id, name, address, coords, photos[], sunpath[] }]
       script: { mode: "screenplay", html: "", drawHTML: "", paper: null },
       schedule: { days: [] },
       cameras: [], lensSets: [],
@@ -111,7 +111,8 @@
       }),
       locations: arr(p.locations).map(function(l){
         l = obj(l);
-        return { id: str(l.id) || FP.uid("l"), name: str(l.name), coords: str(l.coords), sunpath: photos(l.sunpath) };
+        return { id: str(l.id) || FP.uid("l"), name: str(l.name), address: str(l.address), coords: str(l.coords),
+          photos: photos(l.photos), sunpath: photos(l.sunpath) };
       }),
       script: Object.assign({}, b.script, obj(p.script)),
       schedule: { days: arr(obj(p.schedule).days).map(function(d){

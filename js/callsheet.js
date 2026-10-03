@@ -91,10 +91,10 @@
     var dash = function(v){ return esc(v || "—"); };
     var scenes = plan.rows.filter(function(r){ return !r.brk; });
 
-    var keys = cs.crew.filter(function(c){ return c.key && (c.name || c.role); });
-    var crew = cs.crew.filter(function(c){ return c.name || c.role; });
+    var keys = cs.crew.filter(function(c){ return c.key && String(c.name || "").trim(); });
+    var crew = cs.crew.filter(function(c){ return String(c.name || "").trim(); });
     var byDept = {};
-    crew.forEach(function(c){ (byDept[c.dept || "Other"] = byDept[c.dept || "Other"] || []).push(c); });
+    crew.forEach(function(c){ var k = FP.crewDept(c); (byDept[k] = byDept[k] || []).push(c); });
     var depts = (FP.CREW_DEPTS || []).filter(function(x){ return byDept[x]; }).concat(Object.keys(byDept).filter(function(x){ return (FP.CREW_DEPTS || []).indexOf(x) === -1; }));
     var cast = cs.cast.filter(function(c){ return c.character || c.actor; });
     var rides = cs.transport.filter(function(t){ return t.who || t.passengers; });
@@ -107,7 +107,7 @@
         '<div class="cs-daybox"><b>Day ' + n + ' of ' + days(p).length + '</b><span>' + esc(fmtDate(d.date)) + '</span></div></div>' +
         '<div class="cs-stats">' + stat("General call", d.call) + stat("Est. wrap", clock(plan.wrap)) +
           stat("Sunrise", sun && sun.sunrise) + stat("Sunset", sun && sun.sunset) + stat("Golden hour, evening", sun && sun.goldenPm) + '</div>' +
-        (sun ? '<p class="cs-tz">Sun times at ' + esc(tzLabel(p)) + '. Change the offset on the Sun path page.</p>' : "") +
+        (sun ? '<p class="cs-tz">Sun times at ' + esc(tzLabel(p)) + ', from the location\'s coordinates.</p>' : "") +
       '</header>' +
       (keys.length ? block("Key contacts", '<table class="cs-table"><tbody>' + keys.map(function(c){
         return '<tr><td><b>' + dash(c.role) + '</b></td><td>' + dash(c.name) + '</td><td class="tn">' + esc(c.phone) + '</td><td>' + esc(c.email) + '</td></tr>';
@@ -145,11 +145,110 @@
     '</article>';
   }
 
+  // ---------- A4 pages ----------
+  // The sheet is laid out on real A4 pages (794 x 1123 at 96 dpi). Sections flow onto
+  // the next page when they don't fit; a table splits between rows and repeats its head.
+  var A4W = 794;
+  function paginate(wrap, p){
+    var html = sheetHTML(p);
+    if (html.indexOf("cs-sheet") === -1){ wrap.innerHTML = html; return; }
+    var src = document.createElement("div");
+    src.innerHTML = html;
+    var blocks = Array.prototype.slice.call(src.firstElementChild.children);
+    wrap.innerHTML = '<div class="cs-pages"></div>';
+    var box = wrap.firstChild, body = null, pages = [];
+    function newPage(){
+      var pg = document.createElement("div");
+      pg.className = "cs-page";
+      pg.innerHTML = '<div class="cs-page-body"></div><div class="cs-page-foot"><span>' + esc(p.name) + ' · Callsheet</span><span class="pn"></span></div>';
+      box.appendChild(pg);
+      pages.push(pg);
+      body = pg.firstChild;
+    }
+    function over(){ return body.scrollHeight > body.clientHeight + 1; }
+    function shell(block, title){
+      var s = block.cloneNode(false);
+      if (title){ var tt = title.cloneNode(true); tt.insertAdjacentHTML("beforeend", ' <span class="cs-count">continued</span>'); s.appendChild(tt); }
+      return s;
+    }
+    // a part is worth keeping once it holds a row or anything besides its title
+    function hasContent(part){
+      if (part.querySelector("tbody tr")) return true;
+      return Array.prototype.some.call(part.children, function(c){ return !c.classList.contains("cs-block-title") && c.tagName !== "TABLE"; });
+    }
+    function tableShell(t){
+      var c = t.cloneNode(false);
+      if (t.tHead) c.appendChild(t.tHead.cloneNode(true));
+      c.appendChild(document.createElement("tbody"));
+      return c;
+    }
+    function place(block){
+      body.appendChild(block);
+      if (!over()) return;
+      body.removeChild(block);
+      var tables = block.querySelectorAll("table");
+      if (!tables.length || !block.classList.contains("cs-block")){
+        if (body.children.length) newPage();
+        body.appendChild(block);
+        return;
+      }
+      // fill what's left of this page row by row, then carry on overleaf
+      var title = block.querySelector(".cs-block-title"), part = block.cloneNode(false), kids = Array.prototype.slice.call(block.children);
+      body.appendChild(part);
+      function fresh(){
+        // a title left alone at the foot of a page goes over with its content
+        if (!hasContent(part)){
+          body.removeChild(part);
+          if (title && title.parentNode === part){ newPage(); part = block.cloneNode(false); part.appendChild(title); body.appendChild(part); return; }
+        }
+        newPage();
+        part = shell(block, title);
+        body.appendChild(part);
+      }
+      kids.forEach(function(kid){
+        if (kid.tagName !== "TABLE"){
+          part.appendChild(kid);
+          if (over() && hasContent(part) && part.children.length > 1){ part.removeChild(kid); fresh(); part.appendChild(kid); }
+          return;
+        }
+        var t = tableShell(kid);
+        part.appendChild(t);
+        Array.prototype.slice.call(kid.tBodies[0] ? kid.tBodies[0].rows : []).forEach(function(row){
+          t.tBodies[0].appendChild(row);
+          if (!over()) return;
+          t.tBodies[0].removeChild(row);
+          if (!t.tBodies[0].rows.length) part.removeChild(t);
+          // a row too tall for an empty page stays where it is rather than paging forever
+          if (!hasContent(part) && body.children.length === 1){ part.appendChild(t); t.tBodies[0].appendChild(row); return; }
+          fresh();
+          t = tableShell(kid);
+          part.appendChild(t);
+          t.tBodies[0].appendChild(row);
+        });
+      });
+    }
+    newPage();
+    blocks.forEach(place);
+    pages.forEach(function(pg, i){ pg.querySelector(".pn").textContent = "Page " + (i + 1) + " of " + pages.length; });
+    fit(wrap);
+  }
+  // narrower windows see the pages scaled down, never cut off
+  function fit(wrap){
+    var box = wrap.querySelector(".cs-pages");
+    if (!box) return;
+    var room = wrap.clientWidth - 32;
+    box.style.zoom = room > 0 && room < A4W ? (room / A4W).toFixed(3) : "";
+  }
+  window.addEventListener("resize", function(){
+    var w = document.querySelector("[data-cs-sheet]");
+    if (w) fit(w);
+  });
+
   // ---------- the side panels ----------
   function railHTML(p){
     var d = curDay(p), rec = d ? record(p, d, false) : {}, prod = production(p);
     var f = function(k, label, v, attrs){ return FP.field(label, FP.input(k, v, attrs)); };
-    var dayPanel = d ? '<div class="cs-panel" data-coll="day" data-rec="' + esc(d.id) + '"><div class="tr-h">This day</div><div class="sun-fields">' +
+    var dayPanel = d ? '<div class="cs-panel" data-coll="day" data-rec="' + esc(d.id) + '"><div class="tr-h">This day</div><div class="rail-fields">' +
         f("unitBase", "Unit base / parking", rec.unitBase, 'placeholder="Where the trucks go"') +
         f("hospital", "Nearest hospital", rec.hospital, 'placeholder="Name, address, distance"') +
         f("weather", "Weather", rec.weather, 'placeholder="e.g. 14°C, light rain, wind 20 km/h"') +
@@ -159,23 +258,23 @@
         FP.field("Notes", '<textarea data-k="notes" class="grow" rows="3" placeholder="Anything the crew needs to know">' + esc(rec.notes || "") + '</textarea>') +
       '</div></div>' : "";
     return '<aside class="toolrail cs-rail">' +
-      '<div class="cs-panel"><div class="tr-h">Shooting day</div><div class="sun-fields">' +
+      '<div class="cs-panel"><div class="tr-h">Shooting day</div><div class="rail-fields">' +
         (days(p).length ? '<select class="cell-sel boxed" data-cs-day aria-label="Shooting day">' + days(p).map(function(x, i){
           return '<option value="' + esc(x.id) + '"' + (x === d ? " selected" : "") + '>Day ' + (i + 1) + ' · ' + esc(x.date ? fmtDate(x.date) : "no date") + '</option>';
         }).join("") + '</select>' : '<p class="fp-hint">No shooting days yet.</p>') +
         '<p class="fp-hint">Date, call time and scenes come from the Schedule; crew and cast from the Crew page.</p>' +
-        '<div class="sun-btns"><button type="button" class="btn ghost" data-act="go" data-page="schedule">Schedule</button>' +
+        '<div class="rail-btns"><button type="button" class="btn ghost" data-act="go" data-page="schedule">Schedule</button>' +
           '<button type="button" class="btn ghost" data-act="go" data-page="crew">Crew and cast</button></div>' +
       '</div></div>' +
       dayPanel +
-      '<div class="cs-panel" data-coll="prod"><div class="tr-h">Production</div><div class="sun-fields">' +
+      '<div class="cs-panel" data-coll="prod"><div class="tr-h">Production</div><div class="rail-fields">' +
         '<p class="fp-hint">Entered once; on every day\'s sheet.</p>' +
         f("company", "Production company", prod.company, 'placeholder="Company name"') +
         f("address", "Address / registration", prod.address, 'placeholder="Address, registration no."') +
         f("invoiceTo", "Invoices to", prod.invoiceTo, 'type="email" placeholder="invoices@…"') +
         f("invoiceCc", "Cc", prod.invoiceCc, 'type="email" placeholder="Optional"') +
       '</div></div>' +
-      '<div class="cs-panel" data-coll="transport"><div class="tr-h">Transport</div><div class="sun-fields">' +
+      '<div class="cs-panel" data-coll="transport"><div class="tr-h">Transport</div><div class="rail-fields">' +
         p.callsheet.transport.map(function(t){
           return '<div class="cs-ride" data-rec="' + esc(t.id) + '"><div class="cs-ride-head"><span>Ride</span>' +
             '<button type="button" class="x-btn" data-act="del-ride" aria-label="Remove ride">×</button></div>' +
@@ -193,7 +292,7 @@
         '<div class="workwindow"><div class="pg-toolbar"><div class="left"><h3>Callsheet</h3><span class="count">' +
           (days(p).length ? days(p).length + (days(p).length === 1 ? " shooting day" : " shooting days") : "No shooting days yet") + '</span></div>' +
           '<div class="right"><button type="button" class="btn ghost" data-act="export"' + (days(p).length ? "" : " disabled") + '>Export callsheet PDF</button></div></div>' +
-          '<div class="cs-wrap" data-cs-sheet>' + sheetHTML(p) + '</div></div>' +
+          '<div class="cs-wrap" data-cs-sheet></div></div>' +
       '</div>';
     },
     resolve: function(p, coll, rec){
@@ -202,7 +301,8 @@
       if (coll === "day"){ var d = days(p).filter(function(x){ return x.id === rec; })[0]; return d ? record(p, d, true) : null; }
       return null;
     },
-    typed: function(H, p){ H.querySelector("[data-cs-sheet]").innerHTML = sheetHTML(p); },
+    drawn: function(H, p){ paginate(H.querySelector("[data-cs-sheet]"), p); },
+    typed: function(H, p){ paginate(H.querySelector("[data-cs-sheet]"), p); },
     actions: {
       go: function(b){ FP.showPage(b.getAttribute("data-page")); },
       "add-ride": function(){

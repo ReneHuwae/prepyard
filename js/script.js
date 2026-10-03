@@ -188,7 +188,7 @@
     for (var i = 0; i < p.locations.length; i++){
       if (norm(p.locations[i].name) === norm(n)) return p.locations[i].name;
     }
-    p.locations.push({ id: FP.uid("l"), name: n, coords: "", sunpath: [] });
+    p.locations.push({ id: FP.uid("l"), name: n, address: "", coords: "", photos: [], sunpath: [] });
     return n;
   }
   function newSceneFromHeading(p, h, parsed){

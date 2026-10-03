@@ -299,7 +299,7 @@
 
   // ---------- editor ----------
   var currentPage = "script";
-  var MORE_PAGES = ["camera", "locations", "sun", "crew"];
+  var MORE_PAGES = ["camera", "locations", "crew"];
 
   function enterProject(id, project, page){
     FP.openSession(id, project);
