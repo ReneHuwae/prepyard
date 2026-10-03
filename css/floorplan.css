@@ -13,7 +13,6 @@
 .fp-tlabel:first-child{ margin-top:0; }
 .fp-tlabel .car{ font-size:9px; transition:transform .12s; }
 .fp-tlabel[aria-expanded="false"] .car{ transform:rotate(-90deg); }
-.fp-tlabel[data-fpgroup="Lights"]{ color:var(--light); }
 .fp-tgroup{ display:grid; grid-template-columns:repeat(3, 34px); gap:4px; }
 .fp-tgroup.shut{ display:none; }
 .fp-tool{ position:relative; width:34px; height:34px; display:flex; align-items:center; justify-content:center; padding:0;
@@ -132,3 +131,32 @@
   .fp-tool::after{ display:none; }
   .fp-pick .cell-sel.boxed{ min-width:0; max-width:46vw; }
 }
+
+/* stages: a row of numbered stages above the plan, and each moving item's path */
+.fp-stagebar{ display:flex; align-items:center; flex-wrap:wrap; gap:6px 14px; padding:8px 20px; border-bottom:1px solid var(--line); background:var(--bg-raised); }
+.fp-stage-l{ font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint); }
+.fp-stage-tabs{ gap:4px; }
+.fp-stage-tabs button{ min-width:28px; text-align:center; font-variant-numeric:tabular-nums; }
+.fp-stage-btn{ height:30px; padding:0 12px; font-size:12.5px; }
+.fp-stage-del{ font-size:12px; color:var(--ink-faint); }
+.fp-stage-hint{ font-size:12px; color:var(--ink-soft); flex:1 1 260px; }
+.fp-motion-layer{ pointer-events:none; }
+.fp-motion{ fill:none; stroke:var(--notes); stroke-width:1.6; stroke-dasharray:5 4; opacity:.8; }
+.fp-motion-arrow{ fill:var(--notes); }
+.fp-motion-dot{ fill:var(--bg-raised); stroke:var(--notes); stroke-width:1.4; }
+.fp-motion-dot.on{ fill:var(--notes); }
+.fp-motion-n{ font-family:var(--font-ui); font-size:9.5px; font-weight:700; fill:var(--notes); }
+.fp-motion-dot.on + .fp-motion-n{ fill:var(--bg-raised); }
+.fp-prev{ opacity:.28; }
+.fp-prop.moving, .fp-cam.moving{ opacity:.55; }
+.fp-spot{ pointer-events:none; }
+.fp-spot circle{ fill:none; stroke:var(--accent); stroke-width:2; }
+.fp-spot path{ stroke:var(--accent); stroke-width:1.5; }
+
+/* zoom: three small buttons in the plan's corner */
+.fp-zoom{ position:absolute; right:12px; bottom:12px; display:flex; background:var(--bg-raised); border:1px solid var(--line-strong); box-shadow:0 6px 16px -10px rgba(0,0,0,.35); }
+.fp-zoom button{ height:30px; min-width:30px; padding:0 8px; border:none; border-radius:0; background:none; color:var(--ink); font-size:15px; line-height:1; }
+.fp-zoom button[data-fpzoom="fit"]{ font-size:11.5px; font-weight:600; min-width:52px; border-left:1px solid var(--line); border-right:1px solid var(--line); font-variant-numeric:tabular-nums; }
+.fp-zoom button:hover{ background:var(--bg); }
+.fp-svg.panning{ cursor:grab; }
+.fp-svg.panning:active{ cursor:grabbing; }

@@ -35,16 +35,52 @@
     return "";
   }
   function linkHTML(l){
-    var link = mapsLink(l);
-    return link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener">Open map ↗</a>'
-      : (l.coords.trim() ? '<span class="muted">Couldn\'t read these coordinates</span>' : "");
+    var link = mapsLink(l), c = FP.parseCoords(l.coords || "");
+    return (link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener">Open map ↗</a>'
+      : (l.coords.trim() ? '<span class="muted">Couldn\'t read these coordinates</span>' : "")) +
+      (c && FP.maps ? '<button type="button" class="link-btn" data-act="sat">Satellite view</button>'
+        : !l.coords.trim() && l.address.trim() && FP.maps ? '<button type="button" class="link-btn" data-act="find">Find on the map</button>' : "");
+  }
+  // an address becomes coordinates, which bring the satellite view and the callsheet's sun times
+  function findOnMap(id, quiet){
+    var l = byId(FP.project().locations, id);
+    if (!l || !l.address.trim() || !FP.maps) return;
+    FP.maps.geocode(l.address.trim()).then(function(g){
+      if (!g){ if (!quiet) FP.toast("Couldn't find that address. Paste coordinates or a maps link instead.", 6000); return; }
+      FP.change(function(p){ var x = byId(p.locations, id); if (x && !x.coords.trim()) x.coords = g.lat.toFixed(6) + ", " + g.lon.toFixed(6); });
+      FP.toast("Found: " + (g.place || l.address.trim()) + ".", 4000);
+    }, function(err){ if (!quiet) FP.toast(err && err.message ? err.message : "Couldn't reach the map service.", 6000); });
+  }
+  // a larger satellite view, closer in or further out
+  function satView(id){
+    var l = byId(FP.project().locations, id);
+    if (!l) return;
+    var z = l.mapZoom || 17;
+    var body = FP.openModal(l.name || "Location", '<div class="loc-sat-big"><img src="' + esc(satUrl(l, z, 1000, 620)) + '" alt="Satellite view"></div>' +
+      '<div class="loc-sat-bar"><div class="rail-btns"><button type="button" class="btn ghost" data-z="-1">− Wider</button><button type="button" class="btn ghost" data-z="1">+ Closer</button></div>' +
+      '<span class="muted">' + esc(FP.maps.attribution) + '</span></div>');
+    body.closest(".modal").classList.add("modal-wide");
+    body.addEventListener("click", function(e){
+      var b = e.target.closest("[data-z]");
+      if (!b) return;
+      var nz = Math.max(12, Math.min(20, z + +b.getAttribute("data-z")));
+      FP.quietChange(function(p){ var x = byId(p.locations, id); if (x) x.mapZoom = nz; });
+      satView(id);
+    });
   }
 
+  // a satellite picture of the coordinates; Mapbox draws it, nothing is stored
+  function satUrl(l, zoom, w, h){
+    var c = FP.maps && FP.parseCoords(l.coords || "");
+    return c ? FP.maps.satelliteAt(c.lat, c.lon, zoom || l.mapZoom || 17, w || 480, h || 300) : "";
+  }
   function cardHTML(p, l){
-    var u = usage(p, l.name), ph = l.photos[0];
+    var u = usage(p, l.name), ph = l.photos[0], sat = !ph && satUrl(l);
     return '<div class="loc-card" data-rec="' + esc(l.id) + '">' +
-      '<button type="button" class="loc-photo' + (ph ? " has" : "") + '" data-act="photo" aria-label="' + (ph ? "Location photo" : "Add a photo") + '">' +
-        (ph ? '<img src="' + esc(ph.src) + '" alt="">' + (l.photos.length > 1 ? '<span class="thumb-n">' + l.photos.length + '</span>' : "") : '<span>+ Photo</span>') + '</button>' +
+      '<button type="button" class="loc-photo' + (ph || sat ? " has" : "") + '" data-act="photo" aria-label="' + (ph ? "Location photo" : sat ? "Satellite view" : "Add a photo") + '">' +
+        (ph ? '<img src="' + esc(ph.src) + '" alt="">' + (l.photos.length > 1 ? '<span class="thumb-n">' + l.photos.length + '</span>' : "")
+          : sat ? '<img src="' + esc(sat) + '" alt="Satellite view of ' + esc(l.name || "the location") + '"><span class="loc-sat-tag">Satellite</span>'
+          : '<span>+ Photo</span>') + '</button>' +
       '<button type="button" class="x-btn loc-del" data-act="del" aria-label="Remove ' + esc(l.name || "location") + '">×</button>' +
       FP.input("name", l.name, 'class="loc-name" placeholder="Location name" aria-label="Location name"') +
       FP.input("address", l.address, 'class="loc-addr" placeholder="Address" aria-label="Address"') +
@@ -84,6 +120,7 @@
     focused: function(el, c){ if (c.k === "name") renameFrom = { id: c.rec, name: el.value }; },
     // once a rename is done, the shots that used the old name follow it
     committed: function(el, c){
+      if (c.k === "address"){ var al = byId(FP.project().locations, c.rec); if (al && al.address.trim() && !al.coords.trim()) findOnMap(c.rec, true); return; }
       if (c.k !== "name" || !renameFrom || renameFrom.id !== c.rec) return;
       var from = renameFrom.name, to = el.value.trim();
       renameFrom = { id: c.rec, name: el.value };
@@ -104,8 +141,17 @@
       scene: function(b){
         if (FP.pages.breakdown && FP.pages.breakdown.revealScene) FP.pages.breakdown.revealScene(b.getAttribute("data-scene"));
       },
+      sat: function(b, c){ satView(c.rec); },
+      find: function(b, c){ findOnMap(c.rec); },
       photo: function(b, c){
         var l = byId(FP.project().locations, c.rec);
+        if (l && !l.photos.length && satUrl(l)){
+          FP.openMenu(b, [
+            { label: "View satellite larger", onClick: function(){ satView(c.rec); } },
+            { label: "Add photos", onClick: function(){ pick(c.rec); } }
+          ]);
+          return;
+        }
         if (!l || !l.photos.length){ pick(c.rec); return; }
         FP.openMenu(b, [
           { label: "View larger", onClick: function(){ gallery(c.rec); } },

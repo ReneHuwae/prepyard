@@ -130,7 +130,7 @@
       if (d.onPage) d.onPage();
     };
     d.ensure = function(h){ if (d.y + h > BOTTOM){ d.newPage(); return true; } return false; };
-    d.image = function(src, x, y, maxW, maxH, cover){
+    d.image = function(src, x, y, maxW, maxH, cover, right){
       if (!src) return Promise.resolve(null);
       var p = imgCache[src] || (imgCache[src] = (/^data:image\/png/i.test(src) ? pdf.embedPng(dataBytes(src)) : pdf.embedJpg(dataBytes(src))).catch(function(){ return null; }));
       return p.then(function(img){
@@ -144,7 +144,7 @@
           page.drawImage(img, { x: x + (maxW - w) / 2, y: PH - y - (maxH + h) / 2, width: w, height: h });
           return { w: maxW, h: maxH };
         }
-        page.drawImage(img, { x: x, y: PH - y - h, width: w, height: h });
+        page.drawImage(img, { x: right ? x + maxW - w : x, y: PH - y - h, width: w, height: h });
         return { w: w, h: h };
       });
     };
@@ -282,7 +282,7 @@
     var cols = (FP.shotlistColumns ? FP.shotlistColumns() : FP.COLUMNS).filter(function(c){ return c.key !== "scene"; })
       .map(function(c){ return { key: c.key, label: c.label, w: WEIGHT[c.key] || 8, bold: c.key === "shot", img: c.key === "thumb", flex: FLEX[c.key] }; });
     if (!p.scenes.length){ d.text(d.M, d.y + 20, "No scenes yet.", { size: 10, color: C.faint }); return; }
-    var rows = [];
+    var rows = [], tc = FP.shotTimecodes(p);
     p.scenes.forEach(function(sc, si){
       var labels = FP.shotNumbers(sc);
       rows.push({ band: function(){
@@ -297,6 +297,9 @@
       sc.shots.forEach(function(sh, i){
         var r = { shot: labels[i].label, thumb: sh.storyboard[0] && sh.storyboard[0].src };
         FP.COLUMNS.forEach(function(c){ if (!c.derived) r[c.key] = c.key === "lens" ? lensLabel(sh.lens) : sh[c.key]; });
+        r.startTc = FP.tcFormat(tc[sh.id].start);
+        var df = FP.tcParse(sh.duration);
+        if (df != null) r.duration = FP.durFormat(df);
         rows.push(r);
       });
     });
@@ -459,13 +462,14 @@
     if (!day){ d.text(d.M, d.y + 20, "No shooting days yet.", { size: 10, color: C.faint }); return; }
     var data = FP.callsheetData(p, day), plan = data.plan, sun = data.sun, rec = data.rec, prod = data.prod, cs = p.callsheet;
     var n = p.schedule.days.indexOf(day) + 1;
-    return d.image(prod.logo, d.M, d.y + 2, 150, 40).then(function(logo){
-    if (logo) d.y += logo.h + 10;
+    // the production's logo sits top right, with the day under it
+    return d.image(prod.logo, d.M + d.W - 150, d.y + 2, 150, 40, false, true).then(function(logo){
+    var lh = logo ? logo.h + 10 : 0;
     d.label(d.M, d.y + 6, "Callsheet", { color: C.accent });
     d.text(d.M, d.y + 28, p.name, { size: 22, bold: true });
-    d.text(d.M + d.W, d.y + 12, "Day " + n + " of " + p.schedule.days.length, { size: 13, bold: true, align: "right" });
-    d.text(d.M + d.W, d.y + 27, fmtDate(day.date), { size: 9.5, color: C.soft, align: "right" });
-    d.y += 44;
+    d.text(d.M + d.W, d.y + lh + 12, "Day " + n + " of " + p.schedule.days.length, { size: 13, bold: true, align: "right" });
+    d.text(d.M + d.W, d.y + lh + 27, fmtDate(day.date), { size: 9.5, color: C.soft, align: "right" });
+    d.y += Math.max(44, lh + 36);
     var stats = [["General call", day.call], ["Est. wrap", clock(plan.wrap)], ["Sunrise", sun && sun.sunrise], ["Sunset", sun && sun.sunset], ["Golden hour, evening", sun && sun.goldenPm]];
     var sw = d.W / stats.length;
     stats.forEach(function(s, i){ d.label(d.M + i * sw, d.y + 7, s[0], { size: 6.2 }); d.text(d.M + i * sw, d.y + 23, s[1] || "—", { size: 13, bold: true }); });

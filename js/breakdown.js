@@ -373,11 +373,31 @@
       } else if (act === "media" || act === "media-add"){
         var t = { kind: b.getAttribute("data-kind"), sceneId: sceneId, shotId: b.getAttribute("data-shot-id") || null };
         var list = mediaList(FP.project(), t);
-        if (act === "media-add" || !list || !list.length) pickImages(t);
+        if ((t.kind === "floorplan" || t.kind === "shotFloorplan") && act === "media" && (!list || !list.length)){
+          e.stopPropagation();
+          FP.openMenu(b, [
+            { label: "Create floor plan", hint: "draw it", onClick: function(){ createFloorplan(t.sceneId); } },
+            { label: "Upload floor plan", hint: "an image", onClick: function(){ pickImages(t); } }
+          ]);
+        } else if (act === "media-add" || !list || !list.length) pickImages(t);
         else openGallery(t);
       }
     });
     host.querySelector('[data-bd="file"]').addEventListener("change", onFiles);
+  }
+
+  // opens the floor plan on this scene's location, making the location if the shot list
+  // names one that isn't on the Locations page yet
+  function createFloorplan(sceneId){
+    var p = FP.project(), sc = p.scenes.filter(function(s){ return s.id === sceneId; })[0];
+    if (!sc) return;
+    var name = "";
+    for (var i = 0; i < sc.shots.length; i++) if (String(sc.shots[i].location || "").trim()){ name = sc.shots[i].location.trim(); break; }
+    if (!name){ FP.toast("Give this scene's shots a location in the shot list first; the floor plan is drawn per location.", 6000); return; }
+    var n = name.toLowerCase(), loc = p.locations.filter(function(l){ return String(l.name || "").trim().toLowerCase() === n; })[0];
+    var locId = loc ? loc.id : FP.uid("l");
+    if (!loc) FP.change(function(pp){ pp.locations.push({ id: locId, name: name, address: "", coords: "", photos: [], sunpath: [] }); });
+    if (FP.pages.floorplan && FP.pages.floorplan.show) FP.pages.floorplan.show(locId, sceneId);
   }
 
   FP.pages.breakdown = {

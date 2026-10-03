@@ -72,10 +72,10 @@
   // the area that picks an object up, [width, height] around its centre
   var HIT = {
     actor: [28, 22], extra: [28, 22], mark: [18, 18],
-    car: [200, 90], gmc: [244, 96], cargo: [236, 96], truck: [652, 128], bike: [84, 28], moto: [88, 42],
+    car: [200, 90], gmc: [244, 96], cargo: [236, 96], truck: [652, 128], bike: [72, 28], moto: [88, 42],
     light: [32, 32], sun: [44, 44], lamp: [36, 36], panel: [42, 24], tube: [54, 14], flex: [28, 16], practical: [30, 30], maxi: [46, 28],
     bounce: [64, 24], flag: [52, 22], cstand: [44, 40], track: [200, 36], village: [76, 54],
-    table: [64, 40], chair: [28, 30], stool: [18, 18], sofa: [88, 40], bed: [68, 88], bed1: [40, 88], lounger: [32, 84],
+    table: [64, 40], chair: [28, 30], stool: [18, 18], sofa: [88, 40], bed: [68, 94], bed1: [40, 94], lounger: [32, 84],
     wardrobe: [52, 28], cabinet: [42, 24], kitchen: [100, 28], stove: [28, 28], fridge: [28, 30], bar: [88, 50], toilet: [18, 30],
     plant: [44, 44]
   };
@@ -84,7 +84,7 @@
   var VARIANTS = {
     actor: { key: "stance", label: "Stance", def: "stand", options: [["stand", "Standing"], ["sit", "Sitting"], ["lie", "Lying"]] },
     extra: { key: "stance", label: "Stance", def: "stand", options: [["stand", "Standing"], ["sit", "Sitting"], ["lie", "Lying"]] },
-    butterfly: { key: "size", label: "Frame", def: "6", options: [["4", "4×4"], ["6", "6×6"], ["8", "8×8"], ["12", "12×12"]] }
+    butterfly: { key: "size", label: "Frame", def: "6", options: [["4", "4×4 ft"], ["6", "6×6 ft"], ["8", "8×8 ft"], ["12", "12×12 ft"]] }
   };
   function variant(pr){
     var v = VARIANTS[pr.kind];
@@ -94,17 +94,17 @@
   }
   function frameSide(pr){ return Math.round(+variant(pr) * 0.3048 * 40); }   // feet to plan units
   function hit(pr){
-    if (pr.kind === "actor" || pr.kind === "extra"){ var st = variant(pr); return st === "sit" ? [28, 40] : st === "lie" ? [26, 80] : HIT[pr.kind]; }
+    if (pr.kind === "actor" || pr.kind === "extra"){ var st = variant(pr); return st === "sit" ? [28, 46] : st === "lie" ? [26, 76] : HIT[pr.kind]; }
     if (pr.kind === "butterfly"){ var f = frameSide(pr); return [f + 14, f + 4]; }
     return HIT[pr.kind] || [36, 36];
   }
   function person(pr, ghost){
     var b = ghost ? "p-ghost" : "p-fill", h = ghost ? "p-ghost" : "p-white", n = ghost ? "p-ghost-dot" : "p-dot", st = variant(pr);
-    var nose = '<path class="' + n + '" d="M-1.2,-4.9 L0,-6.8 L1.2,-4.9 Z"/>';
-    if (st === "lie") return '<g transform="translate(0 4)"><rect class="' + b + '" x="-7.5" y="6" width="6.5" height="34" rx="3"/><rect class="' + b + '" x="1" y="6" width="6.5" height="34" rx="3"/>' +
-      '<rect class="' + b + '" x="-11" y="-21" width="22" height="30" rx="7"/><circle class="' + h + '" cy="-27" r="5"/></g>';
-    var legs = st === "sit" ? '<rect class="' + b + '" x="-7.5" y="-17" width="6.5" height="14" rx="3"/><rect class="' + b + '" x="1" y="-17" width="6.5" height="14" rx="3"/>' : "";
-    return legs + '<rect class="' + b + '" x="-11" y="-4" width="22" height="9" rx="4.5"/><circle class="' + h + '" r="5"/>' + nose;
+    var nose = '<path class="' + n + '" d="M-1.2,-5.1 L0,-7 L1.2,-5.1 Z"/>';
+    if (st === "lie") return '<g transform="translate(0 -3)"><rect class="' + b + '" x="-7.5" y="6" width="6.5" height="34" rx="3"/><rect class="' + b + '" x="1" y="6" width="6.5" height="34" rx="3"/>' +
+      '<rect class="' + b + '" x="-12" y="-21" width="24" height="30" rx="7"/><circle class="' + h + '" cy="-27" r="5.2"/></g>';
+    var legs = st === "sit" ? '<rect class="' + b + '" x="-7.5" y="-21" width="6.5" height="18" rx="3"/><rect class="' + b + '" x="1" y="-21" width="6.5" height="18" rx="3"/>' : "";
+    return legs + '<rect class="' + b + '" x="-12" y="-5" width="24" height="11" rx="5.5"/><circle class="' + h + '" r="5.2"/>' + nose;
   }
   function rays(r1, r2, n){
     var d = "";
@@ -153,8 +153,8 @@
         mirrors(306, 60).replace(/rx="6.5" ry="3.4"/g, 'rx="9" ry="4.5"') +
         '<path class="p-fill" d="M235,-52 L304,-52 Q320,-50 323,-32 L323,32 Q320,50 304,52 L235,52 Q231,52 231,48 L231,-48 Q231,-52 235,-52 Z"/>' +
         glass(294, 314, 46, 41, 4) + '<rect class="p-white" x="237" y="-46" width="59" height="92" rx="6"/><path class="p-faint" d="M262,-46 V46"/>';
-      case "bike": return '<rect class="p-tyre" x="-41" y="-2.2" width="24" height="4.4" rx="2.2"/><rect class="p-tyre" x="17" y="-2.2" width="24" height="4.4" rx="2.2"/>' +
-        '<path class="p-line" d="M-29,0 H27"/><path class="p-line" d="M22,-12 V12" style="stroke-width:2"/><path class="p-dot" d="M-16,-3.4 Q-6,-4.2 -3,0 Q-6,4.2 -16,3.4 Q-18,0 -16,-3.4 Z"/>';
+      case "bike": return '<g transform="scale(.86 1)"><rect class="p-tyre" x="-41" y="-2.2" width="24" height="4.4" rx="2.2"/><rect class="p-tyre" x="17" y="-2.2" width="24" height="4.4" rx="2.2"/>' +
+        '<path class="p-line" d="M-29,0 H27"/><path class="p-line" d="M22,-12 V12" style="stroke-width:2"/><path class="p-dot" d="M-16,-3.4 Q-6,-4.2 -3,0 Q-6,4.2 -16,3.4 Q-18,0 -16,-3.4 Z"/></g>';
       case "moto": return '<g transform="scale(.82 .9)"><rect class="p-tyre" x="-52" y="-5" width="27" height="10" rx="5"/><rect class="p-tyre" x="27" y="-4" width="24" height="8" rx="4"/>' +
         '<path class="p-fill" d="M-32,-9 L8,-11 Q22,-11 25,0 Q22,11 8,11 L-32,9 Q-38,0 -32,-9 Z"/><rect class="p-glass" x="-30" y="-6" width="24" height="12" rx="6"/>' +
         '<ellipse class="p-white" cx="6" rx="9" ry="7"/><path class="p-line" d="M22,-19 V19" style="stroke-width:2.2"/>' +
@@ -185,7 +185,7 @@
           '<path class="p-faint" d="M' + (-e) + ',' + (-e) + ' L' + e + ',' + e + ' M' + e + ',' + (-e) + ' L' + (-e) + ',' + e + '"/>' +
           '<rect class="p-line" x="' + (-e) + '" y="' + (-e) + '" width="' + f + '" height="' + f + '" style="stroke-width:2.4"/>' +
           '<circle class="p-dot" cx="' + (-e - 5) + '" r="3"/><circle class="p-dot" cx="' + (e + 5) + '" r="3"/>' +
-          '<text class="p-size" y="4" text-anchor="middle">' + variant(pr) + '×' + variant(pr) + '</text>';
+          '<text class="p-size" y="4" text-anchor="middle">' + variant(pr) + '′ × ' + variant(pr) + '′</text>';
       case "cstand": return '<path class="p-line" d="M0,0 L0,-17 M0,0 L-14.7,8.5 M0,0 L14.7,8.5" style="stroke-linecap:round"/><path class="p-thin" d="M0,0 L22,-12" style="stroke-dasharray:3 2.4"/>' +
         '<circle class="p-dot" r="3.2"/><circle class="p-white" cx="22" cy="-12" r="2.4" style="stroke-width:1.4"/>';
       case "track": var sl = ""; for (var x = -90; x <= 90; x += 20) sl += "M" + x + ",-15 V15 ";
@@ -200,11 +200,11 @@
       case "sofa": return '<rect class="p-fill" x="-42" y="-18" width="84" height="36" rx="6"/><rect class="p-glass" x="-42" y="-18" width="84" height="10" rx="5"/>' +
         '<rect class="p-fill" x="-42" y="-11" width="9" height="29" rx="4"/><rect class="p-fill" x="33" y="-11" width="9" height="29" rx="4"/>' +
         '<rect class="p-white" x="-31" y="-7" width="30" height="22" rx="3"/><rect class="p-white" x="1" y="-7" width="30" height="22" rx="3"/>';
-      case "bed": return '<rect class="p-fill" x="-32" y="-40" width="64" height="80" rx="3"/><rect class="p-glass" x="-32" y="-43" width="64" height="6" rx="2"/>' +
-        '<rect class="p-white" x="-27" y="-34" width="25" height="11" rx="4"/><rect class="p-white" x="2" y="-34" width="25" height="11" rx="4"/>' +
-        '<path class="p-white" d="M-32,-16 H32 V37 Q32,40 29,40 H-29 Q-32,40 -32,37 Z"/><path class="p-faint" d="M-32,-9 H32"/>';
-      case "bed1": return '<rect class="p-fill" x="-18" y="-40" width="36" height="80" rx="3"/><rect class="p-glass" x="-18" y="-43" width="36" height="6" rx="2"/>' +
-        '<rect class="p-white" x="-13" y="-34" width="26" height="11" rx="4"/><path class="p-white" d="M-18,-16 H18 V37 Q18,40 15,40 H-15 Q-18,40 -18,37 Z"/><path class="p-faint" d="M-18,-9 H18"/>';
+      case "bed": return '<rect class="p-fill" x="-32" y="-42" width="64" height="84" rx="3"/><rect class="p-glass" x="-32" y="-46" width="64" height="6" rx="2"/>' +
+        '<rect class="p-white" x="-27" y="-37" width="25" height="12" rx="4"/><rect class="p-white" x="2" y="-37" width="25" height="12" rx="4"/>' +
+        '<path class="p-white" d="M-32,-18 H32 V39 Q32,42 29,42 H-29 Q-32,42 -32,39 Z"/><path class="p-faint" d="M-32,-11 H32"/>';
+      case "bed1": return '<rect class="p-fill" x="-18" y="-42" width="36" height="84" rx="3"/><rect class="p-glass" x="-18" y="-46" width="36" height="6" rx="2"/>' +
+        '<rect class="p-white" x="-13" y="-37" width="26" height="12" rx="4"/><path class="p-white" d="M-18,-18 H18 V39 Q18,42 15,42 H-15 Q-18,42 -18,39 Z"/><path class="p-faint" d="M-18,-11 H18"/>';
       case "lounger": return '<rect class="p-fill" x="-14" y="-40" width="28" height="80" rx="4"/><rect class="p-white" x="-14" y="-40" width="28" height="24" rx="4"/>' +
         '<path class="p-thin" d="M-10,-32 H10 M-10,-24 H10 M-10,-6 H10 M-10,2 H10 M-10,10 H10 M-10,18 H10 M-10,26 H10 M-10,34 H10"/>';
       case "wardrobe": return '<path class="p-swing" d="M-24,12 A12 12 0 0 0 -12,24 M24,12 A12 12 0 0 1 12,24"/><rect class="p-fill" x="-24" y="-12" width="48" height="24" rx="1.5"/>' +

@@ -70,7 +70,7 @@
       script: { mode: "screenplay", html: "", drawHTML: "", paper: null },
       schedule: { days: [] },
       cameras: [], lensSets: [],
-      floorplan: { walls: {}, doors: {}, shapes: {}, cams: {}, props: {} },
+      floorplan: { walls: {}, doors: {}, shapes: {}, cams: {}, props: {}, stages: {} },
       cast: [],
       sun: { lat: "", lon: "", date: "", tz: "", zoom: "", rotate: "" },
       callsheet: { crew: [], cast: [], transport: [], production: {}, days: {} },
@@ -147,7 +147,7 @@
   // them. They're filed under the scene's id now and point at the shot's id.
   function migrateFloorplan(p){
     var fp = p.floorplan;
-    ["walls", "doors", "shapes", "cams", "props"].forEach(function(k){ fp[k] = obj(fp[k]); });
+    ["walls", "doors", "shapes", "cams", "props", "stages"].forEach(function(k){ fp[k] = obj(fp[k]); });
     var byId = {}, byNum = {};
     p.scenes.forEach(function(sc){ byId[sc.id] = sc; if (sc.num.trim() && !byNum[sc.num.trim()]) byNum[sc.num.trim()] = sc; });
     ["cams", "props"].forEach(function(kind){
@@ -192,6 +192,43 @@
 
   // Shot numbers come from order plus the Sub column: a lettered sub-shot after A
   // keeps the number of the shot before it (1, 1B, 1C, 2 …).
+  // ---------- timecode, 25 fps ----------
+  // A shot's duration is kept as timecode (HH:MM:SS:FF). Start timecodes aren't stored:
+  // the shot list runs from 00:00:00:00 and each shot starts where the one before ends.
+  FP.FPS = 25;
+  FP.tcFormat = function(frames){
+    var f = Math.max(0, Math.round(frames || 0)), fps = FP.FPS, pad = function(n){ return (n < 10 ? "0" : "") + n; };
+    var ff = f % fps, s = Math.floor(f / fps), ss = s % 60, m = Math.floor(s / 60), mm = m % 60, hh = Math.floor(m / 60);
+    return pad(hh) + ":" + pad(mm) + ":" + pad(ss) + ":" + pad(ff);
+  };
+  // reads 00:00:04:12, 04:12, 1:30 (min:sec), 4, 4s, 4.5 and the like; null if it can't
+  FP.tcParse = function(str){
+    var t = String(str == null ? "" : str).trim().toLowerCase().replace(/,/g, ".");
+    if (!t) return null;
+    var fps = FP.FPS, m;
+    if ((m = t.match(/^(\d+(?:\.\d+)?)\s*(s|sec|secs|seconds)?$/))) return Math.round(parseFloat(m[1]) * fps);
+    if (!/^[\d:;.]+$/.test(t)) return null;
+    var parts = t.split(/[:;.]/).map(Number);
+    if (parts.some(isNaN)) return null;
+    if (parts.length === 4) return ((parts[0] * 60 + parts[1]) * 60 + parts[2]) * fps + parts[3];
+    if (parts.length === 3) return (parts[0] * 60 + parts[1]) * fps + parts[2];   // mm:ss:ff
+    if (parts.length === 2) return (parts[0] * 60 + parts[1]) * fps;              // mm:ss
+    return null;
+  };
+  // durations read as seconds, to a tenth: "4 sec", "1.2 sec"
+  FP.durFormat = function(frames){
+    var sec = Math.round(Math.max(0, frames || 0) / FP.FPS * 10) / 10;
+    return (sec % 1 ? sec.toFixed(1) : String(sec)) + " sec";
+  };
+  FP.shotTimecodes = function(p){
+    var at = 0, out = {};
+    p.scenes.forEach(function(sc){ sc.shots.forEach(function(sh){
+      var d = FP.tcParse(sh.duration) || 0;
+      out[sh.id] = { start: at, dur: d };
+      at += d;
+    }); });
+    return out;
+  };
   FP.shotNumbers = function(scene){
     var n = 0;
     return scene.shots.map(function(s){
