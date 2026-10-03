@@ -59,7 +59,8 @@
   }
   FP.download = download;
   // Photos are stored inside the project, so they're scaled down and saved as JPEG first.
-  FP.readImageFile = function(file, maxDim, quality){
+  // A logo passes "png" so a transparent background stays transparent.
+  FP.readImageFile = function(file, maxDim, quality, type){
     return new Promise(function(resolve, reject){
       var reader = new FileReader();
       reader.onload = function(){
@@ -69,7 +70,7 @@
           var c = document.createElement("canvas");
           c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
           c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-          resolve(c.toDataURL("image/jpeg", quality || 0.75));
+          resolve(type === "png" ? c.toDataURL("image/png") : c.toDataURL("image/jpeg", quality || 0.75));
         };
         img.onerror = function(){
           reject(new Error(/\.(heic|heif)$/i.test(file.name || "") ? "HEIC photos only open in Safari. Convert to JPEG first." : "That file isn't an image this browser can read."));
@@ -236,6 +237,7 @@
   function showHome(){
     $("editor").hidden = true;
     $("home").hidden = false;
+    if (FP.showTutorials && !$("homeTutorials").hidden) FP.showTutorials(false);
     document.title = "Filmprep";
     renderHome();
     clearInterval(homeTimer);

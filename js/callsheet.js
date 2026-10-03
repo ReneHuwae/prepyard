@@ -103,7 +103,8 @@
 
     return '<article class="cs-sheet">' +
       '<header class="cs-head"><div class="cs-head-top">' +
-        '<div><div class="cs-eyebrow">Callsheet</div><h2 class="cs-title">' + esc(p.name) + '</h2></div>' +
+        '<div>' + (prod.logo ? '<img class="cs-logo" src="' + esc(prod.logo) + '" alt="' + esc(prod.company || "Production logo") + '">' : "") +
+          '<div class="cs-eyebrow">Callsheet</div><h2 class="cs-title">' + esc(p.name) + '</h2></div>' +
         '<div class="cs-daybox"><b>Day ' + n + ' of ' + days(p).length + '</b><span>' + esc(fmtDate(d.date)) + '</span></div></div>' +
         '<div class="cs-stats">' + stat("General call", d.call) + stat("Est. wrap", clock(plan.wrap)) +
           stat("Sunrise", sun && sun.sunrise) + stat("Sunset", sun && sun.sunset) + stat("Golden hour, evening", sun && sun.goldenPm) + '</div>' +
@@ -269,6 +270,11 @@
       dayPanel +
       '<div class="cs-panel" data-coll="prod"><div class="tr-h">Production</div><div class="rail-fields">' +
         '<p class="fp-hint">Entered once; on every day\'s sheet.</p>' +
+        '<div class="fld"><span>Logo</span>' + (prod.logo
+          ? '<div class="cs-logo-edit"><img src="' + esc(prod.logo) + '" alt="Production logo"><div class="rail-btns">' +
+              '<button type="button" class="btn ghost" data-act="logo">Replace</button><button type="button" class="btn ghost" data-act="del-logo">Remove</button></div></div>'
+          : '<button type="button" class="cs-logo-drop" data-act="logo">+ Upload logo<small>PNG, JPEG or SVG. A transparent PNG looks best.</small></button>') +
+          '<input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden data-cs-logo></div>' +
         f("company", "Production company", prod.company, 'placeholder="Company name"') +
         f("address", "Address / registration", prod.address, 'placeholder="Address, registration no."') +
         f("invoiceTo", "Invoices to", prod.invoiceTo, 'type="email" placeholder="invoices@…"') +
@@ -305,6 +311,8 @@
     typed: function(H, p){ paginate(H.querySelector("[data-cs-sheet]"), p); },
     actions: {
       go: function(b){ FP.showPage(b.getAttribute("data-page")); },
+      logo: function(){ page.host().querySelector("[data-cs-logo]").click(); },
+      "del-logo": function(){ FP.change(function(p){ production(p).logo = ""; }); },
       "add-ride": function(){
         var id = FP.uid("tr");
         FP.change(function(p){ p.callsheet.transport.push({ id: id, who: "", passengers: "", from: "", to: "", call: "", note: "" }); });
@@ -318,6 +326,14 @@
     bind: function(host){
       host.addEventListener("change", function(e){
         if (e.target.hasAttribute("data-cs-day")){ dayId = e.target.value; page.redraw(); }
+        if (e.target.hasAttribute("data-cs-logo")){
+          var file = e.target.files && e.target.files[0];
+          e.target.value = "";
+          if (!file) return;
+          FP.readImageFile(file, 800, 0, "png").then(function(src){
+            FP.change(function(p){ production(p).logo = src; });
+          }, function(err){ FP.toast(err.message || "Couldn't read that image.", 5000); });
+        }
       });
     },
     api: { dayId: function(){ return dayId; } }

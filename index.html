@@ -25,15 +25,22 @@
   <header class="home-top">
     <span class="tb-brand is-static">Filmprep</span>
     <div class="tb-right">
+      <button class="btn ghost" id="homeTutorialsBtn" type="button">Tutorials</button>
       <button class="btn ghost" id="homeOpenFile" type="button">Open project file…</button>
       <input type="file" id="homeOpenFileInput" accept=".json,application/json" hidden>
     </div>
   </header>
-  <main class="home-main">
+  <main class="home-main" id="homeProjects">
     <h2>Your projects</h2>
     <p id="homeNotice" class="notice" hidden></p>
     <div class="home-grid" id="homeGrid"></div>
     <p class="home-foot">The <a href="classic/" id="classicLink" target="_blank" rel="noopener">classic version</a> is still there if you need it. Projects from it open here as they are.</p>
+  </main>
+  <main class="home-main" id="homeTutorials" hidden>
+    <button class="tut-back" id="tutBack" type="button">← Your projects</button>
+    <h2>Tutorials</h2>
+    <p class="tut-intro">Short videos on getting the most out of Filmprep, from importing a script to sending the callsheet.</p>
+    <div class="tut-grid" id="tutGrid"></div>
   </main>
 </div>
 
@@ -104,5 +111,6 @@
 <script src="js/callsheet.js"></script>
 <script src="js/pdf.js"></script>
 <script src="js/app.js"></script>
+<script src="js/tutorials.js"></script>
 </body>
 </html>
