@@ -42,7 +42,25 @@
   function slugForFile(name){
     return String(name || "project").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "project";
   }
+  // Inside a claude.ai artifact the page can't start a download itself; the
+  // downloads capability asks the viewer instead. Resolves true when saved.
+  var downloadsCap = (window.claude && typeof window.claude.use === "function")
+    ? window.claude.use("downloads").catch(function(){ return null; })
+    : Promise.resolve(null);
   function download(filename, text, mime){
+    return downloadsCap.then(function(cap){
+      if (!cap){ browserDownload(filename, text, mime); return true; }
+      return cap.save({ filename: filename, data: text }).then(function(){ return true; }, function(err){
+        if (err && err.code === "declined") return false;
+        if (err && err.code === "rate_limited") toast("A save is already waiting for your answer.");
+        else toast("This view can't save files.");
+        return false;
+      });
+    });
+  }
+  // where the "classic version" links go; an artifact build points this at the classic artifact
+  FP.CLASSIC_URL = window.FP_CLASSIC_URL || "classic/";
+  function browserDownload(filename, text, mime){
     var blob = new Blob([text], { type: mime || "application/octet-stream" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
@@ -408,8 +426,9 @@
   function saveProjectFile(){
     var p = FP.project();
     if (!p) return;
-    download(slugForFile(p.name) + ".filmprep.json", FP.projectFileJSON(p), "application/json");
-    toast("Project file saved to your downloads.");
+    download(slugForFile(p.name) + ".filmprep.json", FP.projectFileJSON(p), "application/json").then(function(saved){
+      if (saved) toast("Project file saved to your downloads.");
+    });
   }
   $("shareBtn").addEventListener("click", saveProjectFile);
 
@@ -642,7 +661,7 @@
             '<div class="pending">' +
               '<div class="pending-eyebrow">Being rebuilt, phase ' + def.phase + '</div>' +
               '<p>This page comes back in the new design in phase ' + def.phase + ' of the rebuild. Everything the project holds for it is kept, listed below. ' +
-              'To work on it now, use the <a href="classic/">classic version</a>.</p>' +
+              'To work on it now, use the <a href="' + esc(FP.CLASSIC_URL) + '" target="_blank" rel="noopener">classic version</a>.</p>' +
               '<div class="datalist">' + s.body + '</div>' +
             '</div>' +
           '</div>';
@@ -651,6 +670,8 @@
   });
 
   // ---------- boot ----------
+  var classicLink = $("classicLink");
+  if (classicLink) classicLink.href = FP.CLASSIC_URL;
   FP.storage.init()
     .then(function(){ return FP.importClassicProjects().catch(function(){ return 0; }); })
     .then(function(imported){
