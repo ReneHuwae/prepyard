@@ -69,12 +69,12 @@
 
   // the area that picks an object up, [width, height] around its centre
   var HIT = {
-    actor: [40, 32], extra: [40, 32], mark: [28, 28],
-    car: [200, 90], gmc: [244, 96], cargo: [236, 96], truck: [752, 124], bike: [84, 28], moto: [106, 46],
-    light: [44, 44], sun: [44, 44], lamp: [44, 44], panel: [56, 30], tube: [54, 14], flex: [36, 18], practical: [30, 30],
-    bounce: [64, 24], flag: [60, 22], cstand: [44, 40], track: [200, 36], village: [76, 54],
+    actor: [28, 22], extra: [28, 22], mark: [18, 18],
+    car: [200, 90], gmc: [244, 96], cargo: [236, 96], truck: [652, 128], bike: [84, 28], moto: [88, 42],
+    light: [32, 32], sun: [44, 44], lamp: [36, 36], panel: [42, 24], tube: [54, 14], flex: [28, 16], practical: [30, 30],
+    bounce: [64, 24], flag: [52, 22], cstand: [44, 40], track: [200, 36], village: [76, 54],
     table: [64, 40], chair: [28, 30], stool: [18, 18], sofa: [88, 40], bed: [68, 88], bed1: [40, 88], lounger: [32, 84],
-    wardrobe: [52, 28], cabinet: [42, 24], kitchen: [100, 28], stove: [28, 28], fridge: [28, 30], bar: [88, 44], toilet: [22, 34],
+    wardrobe: [52, 28], cabinet: [42, 24], kitchen: [100, 28], stove: [28, 28], fridge: [28, 30], bar: [88, 50], toilet: [18, 30],
     plant: [44, 44]
   };
 
@@ -104,9 +104,9 @@
   function shape(kind){
     switch (kind){
       // people
-      case "actor": return '<rect class="p-fill" x="-17" y="-6" width="34" height="14" rx="7"/><circle class="p-white" r="7.5"/><path class="p-dot" d="M-1.8,-7.3 L0,-10 L1.8,-7.3 Z"/>';
-      case "extra": return '<rect class="p-ghost" x="-17" y="-6" width="34" height="14" rx="7"/><circle class="p-ghost" r="7.5"/><path class="p-ghost-dot" d="M-1.8,-7.3 L0,-10 L1.8,-7.3 Z"/>';
-      case "mark": return '<rect class="p-mark" x="-12" y="-11" width="24" height="5" rx=".6"/><rect class="p-mark" x="-2.5" y="-11" width="5" height="20" rx=".6"/>';
+      case "actor": return '<rect class="p-fill" x="-11" y="-4" width="22" height="9" rx="4.5"/><circle class="p-white" r="5"/><path class="p-dot" d="M-1.2,-4.9 L0,-6.8 L1.2,-4.9 Z"/>';
+      case "extra": return '<rect class="p-ghost" x="-11" y="-4" width="22" height="9" rx="4.5"/><circle class="p-ghost" r="5"/><path class="p-ghost-dot" d="M-1.2,-4.9 L0,-6.8 L1.2,-4.9 Z"/>';
+      case "mark": return '<rect class="p-mark" x="-7" y="-6.5" width="14" height="3" rx=".4"/><rect class="p-mark" x="-1.5" y="-6.5" width="3" height="12" rx=".4"/>';
       // vehicles
       case "car": return mirrors(32, 40) + body(-93, 92, 36, 36) + glass(18, 44, 30, 25, 4) +
         '<path class="p-glass" d="M-40,-30 L-58,-26 Q-61,0 -58,26 L-40,30 Z"/><rect class="p-white" x="-42" y="-30" width="62" height="60" rx="6"/>' +
@@ -118,37 +118,36 @@
         '<rect class="p-seat" x="18" y="-30" width="24" height="24" rx="5"/><rect class="p-seatback" x="13" y="-30" width="7" height="24" rx="3"/>' +
         '<rect class="p-seat" x="18" y="6" width="24" height="24" rx="5"/><rect class="p-seatback" x="13" y="6" width="7" height="24" rx="3"/>' +
         '<ellipse class="p-line" cx="50" cy="-18" rx="3" ry="9"/><path class="p-faint" d="M-108,0 H-102"/>';
-      case "truck": return '<g transform="translate(32 0)"><rect class="p-fill" x="-402" y="-51" width="556" height="102" rx="3"/>' +
-        '<path class="p-faint" d="M-352,-51 V51 M-302,-51 V51 M-252,-51 V51 M-202,-51 V51 M-152,-51 V51 M-102,-51 V51 M-52,-51 V51 M-2,-51 V51 M48,-51 V51 M98,-51 V51"/>' +
-        '<path class="p-line" d="M-402,-51 V51" style="stroke-width:3"/>' +
-        '<rect class="p-glass" x="154" y="-30" width="84" height="60"/><circle class="p-muted" cx="180" r="15"/>' +
-        mirrors(324, 58).replace(/rx="6.5" ry="3.4"/g, 'rx="9" ry="4.5"') +
-        '<path class="p-fill" d="M236,-50 L318,-50 Q334,-48 337,-30 L337,30 Q334,48 318,50 L236,50 Q232,50 232,46 L232,-46 Q232,-50 236,-50 Z"/>' +
-        glass(308, 328, 44, 39, 4) + '<rect class="p-white" x="238" y="-44" width="72" height="88" rx="6"/><path class="p-faint" d="M252,-30 H296 M252,30 H296"/></g>';
+      case "truck": return '<rect class="p-fill" x="-323" y="-52" width="544" height="104" rx="3"/>' +
+        '<path class="p-faint" d="M-273,-52 V52 M-223,-52 V52 M-173,-52 V52 M-123,-52 V52 M-73,-52 V52 M-23,-52 V52 M27,-52 V52 M77,-52 V52 M127,-52 V52 M177,-52 V52"/>' +
+        '<path class="p-line" d="M-323,-52 V52" style="stroke-width:3"/><rect class="p-glass" x="221" y="-30" width="12" height="60"/>' +
+        mirrors(306, 60).replace(/rx="6.5" ry="3.4"/g, 'rx="9" ry="4.5"') +
+        '<path class="p-fill" d="M235,-52 L304,-52 Q320,-50 323,-32 L323,32 Q320,50 304,52 L235,52 Q231,52 231,48 L231,-48 Q231,-52 235,-52 Z"/>' +
+        glass(294, 314, 46, 41, 4) + '<rect class="p-white" x="237" y="-46" width="59" height="92" rx="6"/><path class="p-faint" d="M262,-46 V46"/>';
       case "bike": return '<rect class="p-tyre" x="-41" y="-2.2" width="24" height="4.4" rx="2.2"/><rect class="p-tyre" x="17" y="-2.2" width="24" height="4.4" rx="2.2"/>' +
         '<path class="p-line" d="M-29,0 H27"/><path class="p-line" d="M22,-12 V12" style="stroke-width:2"/><path class="p-dot" d="M-16,-3.4 Q-6,-4.2 -3,0 Q-6,4.2 -16,3.4 Q-18,0 -16,-3.4 Z"/>';
-      case "moto": return '<rect class="p-tyre" x="-52" y="-5" width="27" height="10" rx="5"/><rect class="p-tyre" x="27" y="-4" width="24" height="8" rx="4"/>' +
+      case "moto": return '<g transform="scale(.82 .9)"><rect class="p-tyre" x="-52" y="-5" width="27" height="10" rx="5"/><rect class="p-tyre" x="27" y="-4" width="24" height="8" rx="4"/>' +
         '<path class="p-fill" d="M-32,-9 L8,-11 Q22,-11 25,0 Q22,11 8,11 L-32,9 Q-38,0 -32,-9 Z"/><rect class="p-glass" x="-30" y="-6" width="24" height="12" rx="6"/>' +
         '<ellipse class="p-white" cx="6" rx="9" ry="7"/><path class="p-line" d="M22,-19 V19" style="stroke-width:2.2"/>' +
-        '<circle class="p-white" cx="25" cy="-21" r="2.4"/><circle class="p-white" cx="25" cy="21" r="2.4"/><path class="p-amber-line" d="M50,-5 Q54,0 50,5"/>';
+        '<circle class="p-white" cx="25" cy="-21" r="2.4"/><circle class="p-white" cx="25" cy="21" r="2.4"/><path class="p-amber-line" d="M50,-5 Q54,0 50,5"/></g>';
       // lights
-      case "light": return '<circle class="p-halo" r="20"/><path class="p-warm" d="M0,-15 C8.5,-15 13,-9 13,-3 C13,3 8,6.5 6.5,10 L-6.5,10 C-8,6.5 -13,3 -13,-3 C-13,-9 -8.5,-15 0,-15 Z"/>' +
-        '<path class="p-amber-line" d="M-3.5,10 V2 L0,-2 L3.5,2 V10" style="stroke-width:1.1"/><rect class="p-amber" x="-6" y="10" width="12" height="3.2" rx="1"/><rect class="p-amber" x="-4.5" y="13.6" width="9" height="3" rx="1"/>';
+      case "light": return '<g transform="scale(.7)">' + '<circle class="p-halo" r="20"/><path class="p-warm" d="M0,-15 C8.5,-15 13,-9 13,-3 C13,3 8,6.5 6.5,10 L-6.5,10 C-8,6.5 -13,3 -13,-3 C-13,-9 -8.5,-15 0,-15 Z"/>' +
+        '<path class="p-amber-line" d="M-3.5,10 V2 L0,-2 L3.5,2 V10" style="stroke-width:1.1"/><rect class="p-amber" x="-6" y="10" width="12" height="3.2" rx="1"/><rect class="p-amber" x="-4.5" y="13.6" width="9" height="3" rx="1"/>' + '</g>';
       case "sun": return '<path class="p-amber-line p-sunray" d="M-6,16 L-14,52 M6,16 L14,52 M0,18 V56"/><circle class="p-sun" r="10"/><path class="p-amber-line" d="' + rays(14, 20, 8) + '" style="stroke-width:2"/>';
-      case "lamp": return beam(10, 10, 0, 40) + '<path class="p-amber-line" d="M-11,-9 L-19,-19 M11,-9 L19,-19" style="stroke-width:2"/><rect class="p-warm" x="-11" y="-9" width="22" height="20" rx="3"/>' +
-        '<path class="p-amber-line" d="M-9,-9 H9" style="stroke-width:3"/><circle class="p-amber" cy="3" r="2.6"/>';
-      case "panel": return '<path class="p-beam soft" d="M-26,-9 L-48,-72 L48,-72 L26,-9 Z"/><rect class="p-warm" x="-26" y="-9" width="52" height="15" rx="2"/>' +
-        '<path class="p-amber-line" d="M-13,-9 V6 M0,-9 V6 M13,-9 V6" style="stroke-width:1"/><path class="p-amber-line" d="M-26,-9 H26" style="stroke-width:2.6"/><circle class="p-amber" cy="12" r="2.6"/>';
+      case "lamp": return '<g transform="scale(.8)">' + beam(10, 10, 0, 40) + '<path class="p-amber-line" d="M-11,-9 L-19,-19 M11,-9 L19,-19" style="stroke-width:2"/><rect class="p-warm" x="-11" y="-9" width="22" height="20" rx="3"/>' +
+        '<path class="p-amber-line" d="M-9,-9 H9" style="stroke-width:3"/><circle class="p-amber" cy="3" r="2.6"/>' + '</g>';
+      case "panel": return '<g transform="scale(.75)">' + '<path class="p-beam soft" d="M-26,-9 L-48,-72 L48,-72 L26,-9 Z"/><rect class="p-warm" x="-26" y="-9" width="52" height="15" rx="2"/>' +
+        '<path class="p-amber-line" d="M-13,-9 V6 M0,-9 V6 M13,-9 V6" style="stroke-width:1"/><path class="p-amber-line" d="M-26,-9 H26" style="stroke-width:2.6"/><circle class="p-amber" cy="12" r="2.6"/>' + '</g>';
       case "tube": return '<ellipse class="p-halo" rx="33" ry="13"/><rect class="p-warm" x="-22" y="-3" width="44" height="6" rx="3" style="stroke-width:1.2"/>' +
         '<path class="p-amber-line" d="M-15,-3 V3 M-9,-3 V3 M-3,-3 V3 M3,-3 V3 M9,-3 V3 M15,-3 V3" style="stroke-width:.6;opacity:.7"/>' +
         '<rect class="p-tyre" x="-25" y="-3.5" width="4.5" height="7" rx="1.2"/><rect class="p-tyre" x="20.5" y="-3.5" width="4.5" height="7" rx="1.2"/>';
-      case "flex": return '<path class="p-beam soft" d="M-14,-7 L-30,-60 L30,-60 L14,-7 Z"/><rect class="p-warm" x="-16" y="-6" width="32" height="6" rx="1" style="stroke-width:1.2"/>' +
-        '<path class="p-line" d="M0,0 V3" style="stroke-width:1.2"/><rect class="p-tyre" x="-3.5" y="3" width="7" height="3.5" rx=".6"/>';
+      case "flex": return '<g transform="scale(.75)"><path class="p-beam soft" d="M-14,-7 L-30,-60 L30,-60 L14,-7 Z"/><rect class="p-warm" x="-16" y="-6" width="32" height="6" rx="1" style="stroke-width:1.2"/>' +
+        '<path class="p-line" d="M0,0 V3" style="stroke-width:1.2"/><rect class="p-tyre" x="-3.5" y="3" width="7" height="3.5" rx=".6"/></g>';
       case "practical": return '<circle class="p-halo" r="22"/><circle class="p-warm" r="10.5"/><circle class="p-amber-line" r="6" style="stroke-width:1;opacity:.6"/><circle class="p-amber" r="2.6"/>';
       // grip
       case "bounce": return '<path class="p-amber-line" d="M-30,-4 Q0,-16 30,-4" style="stroke-width:1.2;stroke-dasharray:2 2.4;opacity:.7"/><rect class="p-white" x="-30" y="-3" width="60" height="6" rx="1"/>' +
         '<path class="p-amber-line" d="M-29,-3 H29" style="stroke-width:2"/><path class="p-line" d="M0,3 V7"/><circle class="p-dot" cy="9" r="2.6"/>';
-      case "flag": return '<rect class="p-solid" x="-28" y="-3" width="56" height="6" rx="1"/><path class="p-line" d="M0,3 V7"/><circle class="p-dot" cy="9" r="2.6"/>';
+      case "flag": return '<g transform="scale(.85 1)">' + '<rect class="p-solid" x="-28" y="-3" width="56" height="6" rx="1"/><path class="p-line" d="M0,3 V7"/><circle class="p-dot" cy="9" r="2.6"/>' + '</g>';
       case "cstand": return '<path class="p-line" d="M0,0 L0,-17 M0,0 L-14.7,8.5 M0,0 L14.7,8.5" style="stroke-linecap:round"/><path class="p-thin" d="M0,0 L22,-12" style="stroke-dasharray:3 2.4"/>' +
         '<circle class="p-dot" r="3.2"/><circle class="p-white" cx="22" cy="-12" r="2.4" style="stroke-width:1.4"/>';
       case "track": var sl = ""; for (var x = -90; x <= 90; x += 20) sl += "M" + x + ",-15 V15 ";
@@ -183,9 +182,9 @@
         '<circle class="p-dot" cx="-5.5" cy="-4.5" r="1.2"/><circle class="p-dot" cx="5.5" cy="5.5" r="1.2"/>';
       case "fridge": return '<path class="p-swing" d="M-12,13 A24 24 0 0 0 12,37"/><rect class="p-fill" x="-12" y="-13" width="24" height="26" rx="2"/>' +
         '<path class="p-line" d="M-12,10 H12" style="stroke-width:1.2"/><path class="p-line" d="M-7,6 H7" style="stroke-linecap:round"/>';
-      case "bar": return '<rect class="p-glass" x="-42" y="-14" width="84" height="16" rx="2"/><rect class="p-solid" x="-42" y="-14" width="84" height="5" rx="2"/>' +
-        [-28, -9, 10, 29].map(function(cx){ return '<circle class="p-fill" cx="' + cx + '" cy="14" r="6" style="stroke-width:1.4"/>'; }).join("");
-      case "toilet": return '<rect class="p-fill" x="-10" y="-16" width="20" height="8" rx="1.8"/><path class="p-white" d="M-8,-8 Q-9,13 0,15 Q9,13 8,-8 Z"/><ellipse class="p-thin" cy="3" rx="4.5" ry="6.5" style="stroke-width:1.2"/>';
+      case "bar": return '<rect class="p-glass" x="-42" y="-16" width="84" height="20" rx="2"/><rect class="p-solid" x="-42" y="-16" width="84" height="5" rx="2"/>' +
+        [-30, -10, 10, 30].map(function(cx){ return '<circle class="p-fill" cx="' + cx + '" cy="15" r="7.5" style="stroke-width:1.4"/>'; }).join("");
+      case "toilet": return '<g transform="scale(.8 .9)"><rect class="p-fill" x="-10" y="-16" width="20" height="8" rx="1.8"/><path class="p-white" d="M-8,-8 Q-9,13 0,15 Q9,13 8,-8 Z"/><ellipse class="p-thin" cy="3" rx="4.5" ry="6.5" style="stroke-width:1.2"/></g>';
       case "plant": return leaves() + '<circle class="p-white" r="5.5"/>';
       default: return '<circle class="p-line" r="4"/><circle class="p-line" r="13" style="stroke-dasharray:3 3"/>';
     }
