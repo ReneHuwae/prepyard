@@ -184,6 +184,12 @@ button.tb-brand:hover{ color:var(--ink-soft); }
 .modal-head h3{ font-family:var(--font-display); font-weight:700; font-size:16px; }
 .modal-body{ padding:18px 20px 20px; display:grid; gap:14px; }
 .modal-body > p{ margin:0; font-size:13px; color:var(--ink-soft); line-height:1.55; }
+/* export and open windows */
+.exp-file{ display:flex; justify-content:space-between; align-items:baseline; gap:14px; padding:12px 14px; border:1px solid var(--line); background:var(--bg); }
+.exp-name{ font-weight:600; font-size:13px; overflow-wrap:anywhere; }
+.exp-size{ font-size:12px; color:var(--ink-faint); white-space:nowrap; font-variant-numeric:tabular-nums; }
+.exp-size.is-error{ color:var(--danger); white-space:normal; }
+.exp-actions{ display:flex; justify-content:flex-end; gap:8px; }
 
 /* settings: dropdown lists */
 /* the list picker reads like the page tabs: text, the chosen one underlined in orange */

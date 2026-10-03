@@ -246,31 +246,31 @@
   function slug(name){
     return String(name || "").trim().replace(/\s+/g, "_").replace(/[^A-Za-z0-9._-]+/g, "_").replace(/_{2,}/g, "_").replace(/^[_.]+|[_.]+$/g, "") || "filmprep";
   }
+  var BLURB = {
+    shotlist: "Every scene and shot, with the columns you have showing.",
+    breakdown: "A card per scene: what it needs, its images, and every shot.",
+    schedule: "Each shooting day with its times, scenes, shots and breaks.",
+    callsheet: "The callsheet for the selected shooting day."
+  };
   function run(kind, label, portrait, build){
     var p = FP.project();
     if (!p) return;
-    FP.toast("Building the " + label.toLowerCase() + " PDF…", 20000);
     var base = slug(p.name), key = kind + "|" + base.toLowerCase();
     var n = (parseInt(p.exportVersions[key], 10) || 0) + 1;
     var name = base + "_" + kind + "_v" + (n < 10 ? "0" : "") + n + ".pdf";
-    return load().then(function(fonts){
-      var d = Doc(fonts, { portrait: portrait, project: p.name, kind: label, title: p.name + " · " + label });
-      return d.init();
-    }).then(function(d){
-      return Promise.resolve(build(d, p)).then(function(){ return d.finish(); });
-    }).then(function(bytes){
-      FP.toast("PDF ready: " + name, 4000);
-      return FP.download(name, bytes, "application/pdf");
-    }).then(function(saved){
+    FP.exportDialog({
+      title: label + " PDF export",
+      text: BLURB[kind] + " Each export gets the next version number, so you can tell revisions apart.",
+      filename: name, mime: "application/pdf",
+      build: function(){
+        return load().then(function(fonts){
+          return Doc(fonts, { portrait: portrait, project: p.name, kind: label, title: p.name + " · " + label }).init();
+        }).then(function(d){
+          return Promise.resolve(build(d, FP.project())).then(function(){ return d.finish(); });
+        });
+      },
       // the number only moves on once a file has actually been saved
-      if (saved){
-        FP.quietChange(function(pp){ pp.exportVersions[key] = n; });
-        FP.toast("Saved " + name + ".");
-      }
-      return saved;
-    }).catch(function(err){
-      if (window.console) console.error(err);
-      FP.toast("Couldn't build the PDF. " + ((err && err.message) || ""), 6000);
+      saved: function(){ FP.quietChange(function(pp){ pp.exportVersions[key] = n; }); }
     });
   }
 

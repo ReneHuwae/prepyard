@@ -59,8 +59,11 @@ td.thumb-col{ padding:4px 8px; }
 .thumb-n{ position:absolute; right:0; bottom:0; font-size:9px; font-weight:700; background:var(--ink); color:var(--bg-raised); padding:1px 3px; }
 
 /* the scene heading: text on white under a firm rule, the number in orange */
-tr.scenebreak td{ background:var(--bg-raised); color:var(--ink); padding:16px 12px 10px; border-right:none;
-  border-top:1.5px solid var(--line-strong); border-bottom:1px solid var(--line); }
+/* each scene is its own block: a gap in the page colour, then its heading under a black rule */
+tr.scenebreak td{ background:var(--bg-raised); color:var(--ink); padding:18px 14px 12px; border-right:none;
+  border-top:26px solid var(--bg); border-bottom:none; box-shadow:inset 0 2px 0 var(--line-strong); }
+table.sl tbody tr.scenebreak:first-child td{ border-top-width:0; }
+table.sl tr.scenebreak + tr.shot-row td{ border-top:1px solid var(--line); }
 .sb{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
 .sb-num{ display:inline-flex; align-items:baseline; gap:2px; width:64px; flex:none; color:var(--accent); font-size:12px; font-weight:700; letter-spacing:.03em; }
 .sb-in, .sb-sel{ background:transparent; border:1px solid transparent; color:var(--ink); padding:2px 4px; border-radius:0; font-family:var(--font-ui); }

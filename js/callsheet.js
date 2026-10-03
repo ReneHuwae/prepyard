@@ -262,7 +262,7 @@
         (days(p).length ? '<select class="cell-sel boxed" data-cs-day aria-label="Shooting day">' + days(p).map(function(x, i){
           return '<option value="' + esc(x.id) + '"' + (x === d ? " selected" : "") + '>Day ' + (i + 1) + ' · ' + esc(x.date ? fmtDate(x.date) : "no date") + '</option>';
         }).join("") + '</select>' : '<p class="fp-hint">No shooting days yet.</p>') +
-        '<p class="fp-hint">Date, call time and scenes come from the Schedule; cast and crew from the Cast and crew page.</p>' +
+        '<p class="fp-hint">Date, call time and scenes come from the <b>schedule</b>, and cast and crew from the <b>cast and crew page</b>.</p>' +
         '<div class="rail-btns"><button type="button" class="btn ghost" data-act="go" data-page="schedule">Schedule</button>' +
           '<button type="button" class="btn ghost" data-act="go" data-page="crew">Cast and crew</button></div>' +
       '</div></div>' +

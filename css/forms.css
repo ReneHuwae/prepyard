@@ -194,3 +194,4 @@ tr.dept-band span{ margin-left:8px; color:var(--ink-faint); font-weight:500; }
 .crew-field.short input{ width:auto; min-width:120px; }
 .cast-section .tbl-wrap{ margin-bottom:22px; }
 .cast-section .muted-note{ margin-bottom:22px; }
+.fp-hint b{ color:var(--ink-soft); font-weight:700; }
