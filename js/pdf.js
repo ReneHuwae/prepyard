@@ -459,6 +459,8 @@
     if (!day){ d.text(d.M, d.y + 20, "No shooting days yet.", { size: 10, color: C.faint }); return; }
     var data = FP.callsheetData(p, day), plan = data.plan, sun = data.sun, rec = data.rec, prod = data.prod, cs = p.callsheet;
     var n = p.schedule.days.indexOf(day) + 1;
+    return d.image(prod.logo, d.M, d.y + 2, 150, 40).then(function(logo){
+    if (logo) d.y += logo.h + 10;
     d.label(d.M, d.y + 6, "Callsheet", { color: C.accent });
     d.text(d.M, d.y + 28, p.name, { size: 22, bold: true });
     d.text(d.M + d.W, d.y + 12, "Day " + n + " of " + p.schedule.days.length, { size: 13, bold: true, align: "right" });
@@ -550,6 +552,7 @@
         d.ensure(14);
         d.text(d.M, d.y, "Sun times for " + (data.loc.name || "the location") + " on this date, from its coordinates.", { size: 7, color: C.faint });
       }
+    });
     });
   }
 

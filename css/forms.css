@@ -195,3 +195,12 @@ tr.dept-band span{ margin-left:8px; color:var(--ink-faint); font-weight:500; }
 .cast-section .tbl-wrap{ margin-bottom:22px; }
 .cast-section .muted-note{ margin-bottom:22px; }
 .fp-hint b{ color:var(--ink-soft); font-weight:700; }
+/* production logo: on the sheet above the title, and its upload in the rail */
+.cs-logo{ display:block; max-width:180px; max-height:48px; object-fit:contain; margin-bottom:14px; }
+.cs-logo-drop{ display:grid; gap:4px; justify-items:start; width:100%; padding:14px; text-align:left; font:inherit; font-weight:600; color:var(--ink);
+  background:var(--bg); border:1px dashed var(--line-strong); cursor:pointer; }
+.cs-logo-drop:hover, .cs-logo-drop:focus-visible{ border-color:var(--accent); }
+.cs-logo-drop small{ font-weight:400; font-size:11.5px; color:var(--ink-faint); }
+.cs-logo-edit{ display:grid; gap:10px; }
+.cs-logo-edit img{ max-width:100%; max-height:64px; object-fit:contain; justify-self:start; padding:8px;
+  background:repeating-conic-gradient(var(--bg) 0 25%, transparent 0 50%) 0 0 / 12px 12px; border:1px solid var(--line); }
