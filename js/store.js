@@ -179,6 +179,7 @@
   FP.isV3Project = function(d){
     return !!(d && (d.app === "filmprep") && d.version === 3 && Array.isArray(d.scenes));
   };
+  // project files from the classic app, including ones saved under the app's earlier names
   FP.isLegacyProject = function(d){
     return !!(d && (d.app === "prepyard" || d.app === "filmprep" || d.app === "decoupage") && typeof d.scenesHTML === "string");
   };
