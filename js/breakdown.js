@@ -126,7 +126,7 @@
         '<div class="pg-toolbar">' +
           '<div class="left"><h3>Breakdown</h3><span class="count" data-bd="count"></span></div>' +
           '<div class="right">' +
-            '<button type="button" class="btn ghost" disabled title="PDF exports return in phase 5 of the rebuild">Export Breakdown PDF</button>' +
+            '<button type="button" class="btn ghost" data-act="export-pdf">Export Breakdown PDF</button>' +
           '</div>' +
         '</div>' +
         '<div class="bd-cards" data-bd="body"></div>' +
@@ -365,7 +365,8 @@
       if (!b) return;
       var act = b.getAttribute("data-act");
       var card = b.closest(".bcard"), sceneId = card && card.getAttribute("data-scene");
-      if (act === "add-scene") addScene();
+      if (act === "export-pdf") FP.exports.breakdown();
+      else if (act === "add-scene") addScene();
       else if (act === "add-shot") addShot(sceneId);
       else if (act === "scene-menu"){ e.stopPropagation(); sceneMenu(b, sceneId); }
       else if (act === "reveal-shot"){

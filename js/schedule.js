@@ -201,7 +201,7 @@
           '<div class="left"><h3>Schedule</h3><span class="count" data-sc="count"></span></div>' +
           '<div class="right">' +
             '<label class="sc-toggle"><input type="checkbox" data-act="scenes-only"' + (scenesOnly ? " checked" : "") + '> Scenes only</label>' +
-            '<button type="button" class="btn ghost" disabled title="PDF exports return in phase 5 of the rebuild">Export Schedule PDF</button>' +
+            '<button type="button" class="btn ghost" data-act="export-pdf"' + (p.schedule.days.length ? "" : " disabled") + '>Export Schedule PDF</button>' +
           '</div>' +
         '</div>' +
         '<div class="sc-body' + (scenesOnly ? " scenes-only" : "") + '" data-sc="body"></div>' +
@@ -212,6 +212,7 @@
   }
   function drawBody(p){
     H.querySelector('[data-sc="count"]').textContent = countText(p);
+    H.querySelector('[data-act="export-pdf"]').disabled = !p.schedule.days.length;
     var body = H.querySelector('[data-sc="body"]');
     if (!p.schedule.days.length){
       body.innerHTML = '<div class="sc-empty"><p>No shooting days yet. Add the first one and every scene and shot lands on it, ' +
@@ -539,7 +540,8 @@
         return;
       }
       var act = b.getAttribute("data-act");
-      if (act === "add-day") addDay();
+      if (act === "export-pdf") FP.exports.schedule();
+      else if (act === "add-day") addDay();
       else if (act === "add-break") addBreak(dayId, b.getAttribute("data-label"), +b.getAttribute("data-mins"));
       else if (act === "del-break"){ change(function(p){ var h = findRow(p, rowId); if (h) h.day.rows.splice(h.index, 1); }); }
       else if (act === "row-menu"){ e.stopPropagation(); rowMenu(b, rowId); }

@@ -1,6 +1,5 @@
 /* Filmprep app shell: home screen, header, page tabs, settings, project files.
-   Pages register themselves in FP.pages; any page not rebuilt yet shows what the
-   project holds for it, so nothing looks lost while the rebuild is in progress. */
+   Pages register themselves in FP.pages and are drawn into the page host here. */
 (function(){
   "use strict";
   var FP = window.FP;
@@ -58,6 +57,7 @@
       });
     });
   }
+  FP.download = download;
   // Photos are stored inside the project, so they're scaled down and saved as JPEG first.
   FP.readImageFile = function(file, maxDim, quality){
     return new Promise(function(resolve, reject){
@@ -475,10 +475,12 @@
       { label: "Project file", hint: ".json", onClick: saveProjectFile },
       "sep",
       { heading: "PDF" },
-      { label: "Shotlist", hint: "returns in phase 5", disabled: true },
-      { label: "Breakdown", hint: "returns in phase 5", disabled: true },
-      { label: "Schedule", hint: "returns in phase 5", disabled: true },
-      { label: "Callsheet", hint: "returns in phase 5", disabled: true }
+      { label: "Shotlist", onClick: function(){ FP.exports.shotlist(); } },
+      { label: "Breakdown", onClick: function(){ FP.exports.breakdown(); } },
+      { label: "Schedule", disabled: !FP.project().schedule.days.length, hint: FP.project().schedule.days.length ? "" : "no days yet",
+        onClick: function(){ FP.exports.schedule(); } },
+      { label: "Callsheet", disabled: !FP.project().schedule.days.length, hint: FP.project().schedule.days.length ? "" : "no days yet",
+        onClick: function(){ FP.exports.callsheet(); } }
     ], { alignRight: true });
   });
 
@@ -581,130 +583,7 @@
   }
   $("settingsBtn").addEventListener("click", openSettings);
 
-  // ---------- pages not rebuilt yet ----------
   FP.pages = FP.pages || {};
-
-  function countMapItems(map){
-    var n = 0;
-    Object.keys(map || {}).forEach(function(k){ if (Array.isArray(map[k])) n += map[k].length; });
-    return n;
-  }
-  function sceneRows(p){
-    if (!p.scenes.length) return '<div class="empty">No scenes yet.</div>';
-    return p.scenes.map(function(s){
-      var meta = [s.intext, s.daynight].filter(Boolean).join(" · ");
-      return '<div class="row"><span class="k">Sc ' + esc(s.num) + '</span>' +
-        '<span class="v">' + esc(s.name || "Untitled scene") + '<small>' + esc(meta) + (s.summary ? " — " + esc(s.summary) : "") + '</small></span>' +
-        '<span class="n">' + s.shots.length + (s.shots.length === 1 ? " shot" : " shots") + '</span></div>';
-    }).join("");
-  }
-  function scriptHeadings(p){
-    if (!p.script.html) return 0;
-    var t = document.createElement("template");
-    t.innerHTML = p.script.html;
-    return t.content.querySelectorAll(".sp-scene").length;
-  }
-  function prettyDate(iso){
-    if (!iso) return "No date set";
-    var d = new Date(iso + "T12:00:00");
-    return isNaN(d) ? iso : d.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
-  }
-
-  var PENDING = {
-    script: { title: "Script", phase: 2, summary: function(p){
-      if (!p.script.html) return { count: "No script yet", body: '<div class="empty">No script imported yet.</div>' };
-      var n = scriptHeadings(p);
-      return { count: (p.script.mode === "treatment" ? "Treatment" : "Screenplay"),
-        body: '<div class="row"><span class="k">Script</span><span class="v">Imported as a ' +
-          (p.script.mode === "treatment" ? "treatment" : "screenplay") + '<small>' + n + (n === 1 ? " scene heading" : " scene headings") +
-          (p.script.drawHTML ? ", with drawings" : "") + '</small></span><span class="n"></span></div>' };
-    } },
-    shotlist: { title: "Shot list", phase: 3, summary: function(p){
-      var shots = FP.countShots(p);
-      return { count: shots + (shots === 1 ? " shot, " : " shots, ") + p.scenes.length + (p.scenes.length === 1 ? " scene" : " scenes"), body: sceneRows(p) };
-    } },
-    breakdown: { title: "Breakdown", phase: 4, summary: function(p){
-      return { count: p.scenes.length + (p.scenes.length === 1 ? " scene" : " scenes"), body: sceneRows(p) };
-    } },
-    schedule: { title: "Schedule", phase: 4, summary: function(p){
-      var days = p.schedule.days;
-      return { count: days.length + (days.length === 1 ? " shooting day" : " shooting days"),
-        body: days.length ? days.map(function(d, i){
-          var shots = d.rows.filter(function(r){ return r.type === "shot"; }).length;
-          var breaks = d.rows.filter(function(r){ return r.type === "break"; }).length;
-          return '<div class="row"><span class="k">Day ' + (i + 1) + '</span><span class="v">' + esc(prettyDate(d.date)) +
-            '<small>Call ' + esc(d.call) + '</small></span><span class="n">' + shots + " shots, " + breaks + (breaks === 1 ? " break" : " breaks") + '</span></div>';
-        }).join("") : '<div class="empty">No shooting days yet.</div>' };
-    } },
-    floorplan: { title: "Floor plan", phase: 5, summary: function(p){
-      var f = p.floorplan;
-      var parts = [["walls", f.walls], ["doors and windows", f.doors], ["shapes", f.shapes], ["camera positions", f.cams], ["props", f.props]]
-        .map(function(x){ return countMapItems(x[1]) + " " + x[0]; });
-      return { count: Object.keys(f.walls || {}).length + " floor plans",
-        body: '<div class="row"><span class="k">Drawn</span><span class="v">' + esc(parts.join(", ")) + '</span><span class="n"></span></div>' };
-    } },
-    callsheet: { title: "Callsheet", phase: 5, summary: function(p){
-      var c = p.callsheet;
-      return { count: p.schedule.days.length + (p.schedule.days.length === 1 ? " day" : " days"),
-        body: [["Crew", c.crew.length], ["Cast", c.cast.length], ["Transport", c.transport.length]].map(function(x){
-          return '<div class="row"><span class="k">' + x[0] + '</span><span class="v">' + x[1] + (x[1] === 1 ? " entry" : " entries") + '</span><span class="n"></span></div>';
-        }).join("") };
-    } },
-    camera: { title: "Camera and lenses", phase: 5, summary: function(p){
-      var rows = p.cameras.map(function(c){
-        return '<div class="row"><span class="k">Camera</span><span class="v">' + esc([c.brand, c.model].filter(Boolean).join(" ")) + '</span><span class="n"></span></div>';
-      }).concat(p.lensSets.map(function(s){
-        return '<div class="row"><span class="k">Lenses</span><span class="v">' + esc([s.brand, s.series].filter(Boolean).join(" ") || "Lens set") +
-          '<small>' + esc(s.lenses.map(function(l){ return l.name; }).filter(Boolean).join(", ")) + '</small></span>' +
-          '<span class="n">' + s.lenses.length + (s.lenses.length === 1 ? " lens" : " lenses") + '</span></div>';
-      }));
-      return { count: p.cameras.length + (p.cameras.length === 1 ? " camera" : " cameras"),
-        body: rows.join("") || '<div class="empty">No cameras or lenses yet.</div>' };
-    } },
-    locations: { title: "Locations", phase: 5, summary: function(p){
-      return { count: p.locations.length + (p.locations.length === 1 ? " location" : " locations"),
-        body: p.locations.map(function(l){
-          return '<div class="row"><span class="k">Location</span><span class="v">' + esc(l.name || "Unnamed") +
-            (l.coords ? '<small>' + esc(l.coords) + '</small>' : "") + '</span><span class="n">' +
-            (l.sunpath.length ? "Sun path saved" : "") + '</span></div>';
-        }).join("") || '<div class="empty">No locations yet.</div>' };
-    } },
-    sun: { title: "Sun path", phase: 5, summary: function(p){
-      var s = p.sun;
-      return { count: s.lat && s.lon ? "Position set" : "No position set",
-        body: '<div class="row"><span class="k">Position</span><span class="v">' +
-          (s.lat && s.lon ? esc(s.lat + ", " + s.lon) : "Not set") + (s.date ? '<small>' + esc(prettyDate(s.date)) + '</small>' : "") +
-          '</span><span class="n"></span></div>' };
-    } },
-    crew: { title: "Crew", phase: 5, summary: function(p){
-      var crew = p.callsheet.crew;
-      return { count: crew.length + (crew.length === 1 ? " person" : " people"),
-        body: crew.map(function(c){
-          return '<div class="row"><span class="k">' + esc(c.dept || "Crew") + '</span><span class="v">' + esc(c.name || "Unnamed") +
-            '<small>' + esc(c.role) + '</small></span><span class="n"></span></div>';
-        }).join("") || '<div class="empty">No crew yet.</div>' };
-    } }
-  };
-
-  Object.keys(PENDING).forEach(function(name){
-    if (FP.pages[name]) return;
-    var def = PENDING[name];
-    FP.pages[name] = {
-      render: function(host, p){
-        var s = def.summary(p);
-        host.innerHTML =
-          '<div class="workwindow">' +
-            '<div class="pg-toolbar"><div class="left"><h3>' + esc(def.title) + '</h3><span class="count">' + esc(s.count) + '</span></div></div>' +
-            '<div class="pending">' +
-              '<div class="pending-eyebrow">Being rebuilt, phase ' + def.phase + '</div>' +
-              '<p>This page comes back in the new design in phase ' + def.phase + ' of the rebuild. Everything the project holds for it is kept, listed below. ' +
-              'To work on it now, use the <a href="' + esc(FP.CLASSIC_URL) + '" target="_blank" rel="noopener">classic version</a>.</p>' +
-              '<div class="datalist">' + s.body + '</div>' +
-            '</div>' +
-          '</div>';
-      }
-    };
-  });
 
   // ---------- boot ----------
   var classicLink = $("classicLink");
