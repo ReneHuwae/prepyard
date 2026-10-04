@@ -98,3 +98,13 @@ table.sl tr.scenebreak + tr.shot-row td{ border-top:1px solid var(--line); }
 .sl-float-head{ position:fixed; z-index:30; overflow:hidden; pointer-events:none; background:var(--bg-raised); box-shadow:0 6px 10px -8px rgba(0,0,0,.18); }
 .sl-float-head table.sl{ min-width:0; table-layout:fixed; }
 .sl-float-head table.sl thead th{ overflow:hidden; }
+
+/* column labels keep the table's column lines, so each label sits over its column */
+table.sl thead th{ border-right:1px solid var(--line); }
+table.sl thead th:last-child, table.sl thead th.grip-col{ border-right:none; }
+/* timecode: start is worked out, duration steps a second at a time */
+table.sl td.tc{ font-size:12.5px; color:var(--ink-soft); white-space:nowrap; padding-left:10px; font-variant-numeric:tabular-nums; }
+.dur{ display:flex; align-items:center; gap:2px; }
+.dur .cell-in{ min-width:0; flex:1; text-align:center; font-variant-numeric:tabular-nums; padding-left:2px; padding-right:2px; }
+.dur-step{ flex:none; width:22px; height:24px; padding:0; border:1px solid transparent; background:none; color:var(--ink-faint); font-size:15px; line-height:1; border-radius:0; cursor:pointer; }
+.dur-step:hover, .dur-step:focus-visible{ color:var(--ink); border-color:var(--line); }

@@ -20,7 +20,7 @@
   var TEXTAREA_COLS = { action: 1, copy: 1, notes: 1 };
   var PLACEHOLDER = { action: "Describe the shot…" };
   var THUMB = { key: "thumb", label: "Thumbnail", hideable: true };
-  var COL_MINW = { startTc: 108, duration: 80, scene: 56, shot: 56, sub: 64, location: 150, special: 110, size: 86,
+  var COL_MINW = { startTc: 112, duration: 132, scene: 56, shot: 56, sub: 64, location: 150, special: 110, size: 86,
     shotType: 120, lens: 96, grip: 112, movement: 124, action: 280, copy: 200, notes: 200, thumb: 88 };
 
   // which columns are hidden is a habit of this browser, not part of the project
@@ -64,9 +64,16 @@
       return '<option value="' + esc(o) + '"' + (o === current ? " selected" : "") + (o ? "" : ' aria-label="None"') + '>' + esc(o) + '</option>';
     }).join("");
   }
+  var TC = {};
   function cellHTML(p, scene, shot, col, label){
     var k = col.key, v = shot[k];
     var aria = ' aria-label="' + esc(col.label + ", shot " + label) + '"';
+    if (k === "startTc") return '<td class="tc mono" data-tc title="Starts where the shot before ends, at 25 fps">' + FP.tcFormat(TC[shot.id] ? TC[shot.id].start : 0) + '</td>';
+    if (k === "duration") v = (function(){ var f = FP.tcParse(v); return f == null ? v : FP.durFormat(f); })();
+    if (k === "duration") return '<td class="dur-cell"><div class="dur">' +
+      '<button type="button" class="dur-step" data-act="dur-" aria-label="One second shorter, shot ' + esc(label) + '">−</button>' +
+      '<input class="cell-in mono" data-f="duration" value="' + esc(v) + '"' + aria + ' placeholder="0 sec" autocomplete="off" spellcheck="false">' +
+      '<button type="button" class="dur-step" data-act="dur+" aria-label="One second longer, shot ' + esc(label) + '">+</button></div></td>';
     if (k === "scene") return '<td class="num muted">' + esc(scene.num) + '</td>';
     if (k === "shot") return '<td class="num">' + esc(label) + '</td>';
     if (k === "thumb"){
@@ -107,6 +114,7 @@
   function tableHTML(p){
     var cols = columns();
     var span = cols.length + 2;
+    TC = FP.shotTimecodes(p);
     var head = '<tr><th class="grip-col" aria-label="Drag handle"></th>' + cols.map(function(c){
       return '<th class="' + (c.hideable ? "" : "core") + '" style="min-width:' + (COL_MINW[c.key] || 80) + 'px">' + esc(c.label) + '</th>';
     }).join("") + '<th class="act-col" aria-label="Shot options"></th></tr>';
@@ -235,6 +243,20 @@
 
   // ---------- changes ----------
   function change(fn, key){ FP.change(fn, key); }
+  function refreshTimecodes(){
+    if (!H) return;
+    var tc = FP.shotTimecodes(FP.project());
+    H.querySelectorAll("tr.shot-row").forEach(function(tr){
+      var td = tr.querySelector("td[data-tc]"), t = tc[tr.getAttribute("data-shot")];
+      if (td && t) td.textContent = FP.tcFormat(t.start);
+    });
+  }
+  function stepDuration(shotId, by){
+    change(function(p){
+      var h = findShot(p, shotId);
+      if (h) h.shot.duration = FP.durFormat(Math.max(0, (FP.tcParse(h.shot.duration) || 0) + by * FP.FPS));
+    });
+  }
   function typed(fn, key){
     selfTyping = true;
     try { FP.change(fn, key); } finally { selfTyping = false; }
@@ -462,6 +484,7 @@
         var v = t.value;
         typed(function(p){ var h = findShot(p, shotId); if (h) h.shot[f] = v; }, "shot:" + shotId + ":" + f);
         lastSceneId = t.closest("tr").getAttribute("data-scene");
+        if (f === "duration") refreshTimecodes();
         return;
       }
       var sf = t.getAttribute("data-sf");
@@ -476,6 +499,11 @@
     });
     host.addEventListener("change", function(e){
       var t = e.target;
+      if (t.getAttribute("data-f") === "duration"){
+        var fr = FP.tcParse(t.value), did = t.closest("tr").getAttribute("data-shot");
+        if (fr != null){ var norm = FP.durFormat(fr); if (norm !== t.value) change(function(p){ var h = findShot(p, did); if (h) h.shot.duration = norm; }); }
+        return;
+      }
       if (t.tagName !== "SELECT") return;
       var f = t.getAttribute("data-f"), sf = t.getAttribute("data-sf"), v = t.value;
       var row = t.closest("tr");
@@ -513,6 +541,7 @@
         if (target) addShot(target.id); else addScene();
       }
       else if (act === "add-shot") addShot(row.getAttribute("data-scene"));
+      else if (act === "dur+" || act === "dur-") stepDuration(row.getAttribute("data-shot"), act === "dur+" ? 1 : -1);
       else if (act === "row-menu"){ e.stopPropagation(); openRowMenu(b, row.getAttribute("data-shot")); }
       else if (act === "scene-menu"){ e.stopPropagation(); openSceneMenu(b, row.getAttribute("data-scene")); }
       else if (act === "thumb"){ e.stopPropagation(); openThumb(b, row.getAttribute("data-shot")); }

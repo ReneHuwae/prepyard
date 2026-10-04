@@ -103,9 +103,8 @@
 
     return '<article class="cs-sheet">' +
       '<header class="cs-head"><div class="cs-head-top">' +
-        '<div>' + (prod.logo ? '<img class="cs-logo" src="' + esc(prod.logo) + '" alt="' + esc(prod.company || "Production logo") + '">' : "") +
-          '<div class="cs-eyebrow">Callsheet</div><h2 class="cs-title">' + esc(p.name) + '</h2></div>' +
-        '<div class="cs-daybox"><b>Day ' + n + ' of ' + days(p).length + '</b><span>' + esc(fmtDate(d.date)) + '</span></div></div>' +
+        '<div><div class="cs-eyebrow">Callsheet</div><h2 class="cs-title">' + esc(p.name) + '</h2></div>' +
+        '<div class="cs-daybox">' + (prod.logo ? '<img class="cs-logo" src="' + esc(prod.logo) + '" alt="' + esc(prod.company || "Production logo") + '">' : "") + '<b>Day ' + n + ' of ' + days(p).length + '</b><span>' + esc(fmtDate(d.date)) + '</span></div></div>' +
         '<div class="cs-stats">' + stat("General call", d.call) + stat("Est. wrap", clock(plan.wrap)) +
           stat("Sunrise", sun && sun.sunrise) + stat("Sunset", sun && sun.sunset) + stat("Golden hour, evening", sun && sun.goldenPm) + '</div>' +
         (sun ? '<p class="cs-tz">Sun times at ' + esc(tzLabel(p)) + ', from the location\'s coordinates.</p>' : "") +
