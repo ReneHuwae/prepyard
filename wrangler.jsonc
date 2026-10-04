@@ -1,8 +1,11 @@
 {
-  // Cloudflare Workers: serve Filmprep as static files, no build step
+  // Cloudflare Workers: Filmprep's static files, plus worker.js for js/config.js
   "name": "filmprep",
+  "main": "worker.js",
   "compatibility_date": "2026-10-01",
   "assets": {
-    "directory": "./"
+    "directory": "./",
+    "binding": "ASSETS",
+    "run_worker_first": ["/js/config.js"]
   }
 }

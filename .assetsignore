@@ -2,3 +2,4 @@
 .assetsignore
 wrangler.jsonc
 CNAME
+worker.js
